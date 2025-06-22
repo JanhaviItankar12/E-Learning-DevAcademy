@@ -27,11 +27,12 @@ const LectureTab = () => {
 
     const [editLecture, { data, isLoading, error, isSuccess }] = useEditLectureMutation();
     const [removeLecture, { data: removeData, isLoading: removeLoading, isSuccess: removeSuccess }] = useRemoveLectureMutation();
-    const {data:lectureData,isLoading:lectureLoading,isSuccess:lectureSuccess,isError:lectureError}=useGetLectureByIdQuery(lectureId);
+    const {data:lectureData,isLoading:lectureLoading,isSuccess:lectureSuccess,isError:lectureError,refetch}=useGetLectureByIdQuery(lectureId);
     const lecture=lectureData?.lecture;
     
     useEffect(()=>{
         if(lecture){
+            refetch();
             setLectureTitle(lecture.lectureTitle);
             setIsFree(lecture.isPreviewFree);
             setUploadVideoInfo(lecture.videoUrl);

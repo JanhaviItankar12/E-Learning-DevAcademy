@@ -95,6 +95,13 @@ export const courseApi=createApi({
           method:"DELETE"
         }),
         invalidatesTags:['Refetch_Creator_Course']
+      }),
+
+      getPublishedCourses:builder.query({
+        query:()=>({
+          url:"/published-courses",
+          method:"GET"
+        })
       })
     })
 });
@@ -110,6 +117,7 @@ export const {
     useRemoveLectureMutation,
     useGetLectureByIdQuery,
     useTogglePublishCourseMutation,
-    useRemoveCourseMutation
+    useRemoveCourseMutation,
+    useGetPublishedCoursesQuery
 }=courseApi
 
