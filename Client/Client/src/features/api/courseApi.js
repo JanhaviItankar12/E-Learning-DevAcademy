@@ -102,6 +102,24 @@ export const courseApi=createApi({
           url:"/published-courses",
           method:"GET"
         })
+      }),
+
+      //course purchase--
+      createOrder:builder.mutation({
+        query:({courseId,amount})=>({
+          url:`/${courseId}/purchase`,
+          method:"POST",
+          body:{amount}
+        })
+      }),
+
+      //verify order
+      verifyOrder:builder.mutation({
+        query:({courseId,response})=>({
+           url:`/${courseId}/purchase/verify`,
+          method:"POST",
+          body:{response}
+        })
       })
     })
 });
@@ -118,6 +136,8 @@ export const {
     useGetLectureByIdQuery,
     useTogglePublishCourseMutation,
     useRemoveCourseMutation,
-    useGetPublishedCoursesQuery
+    useGetPublishedCoursesQuery,
+    useCreateOrderMutation,
+    useVerifyOrderMutation
 }=courseApi
 

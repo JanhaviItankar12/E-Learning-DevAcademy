@@ -6,7 +6,7 @@ import { useGetPublishedCoursesQuery } from '@/features/api/courseApi';
 
 const Courses = () => {
     const {data,isLoading,isError}=useGetPublishedCoursesQuery();
-    if(isError) return <h1>Some Error Occured while fetchinf courses</h1>
+    if(isError) return <h1>Some Error Occured while fetching courses</h1>
    
     return (
         <div className='bg-gray-50'>

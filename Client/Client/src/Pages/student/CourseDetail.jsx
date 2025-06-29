@@ -2,19 +2,30 @@ import BuyCourseButton from '@/components/BuyCourseButton'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
+import { useGetCourseByIdQuery } from '@/features/api/courseApi'
 import { BadgeInfo, Lock, PlayCircle } from 'lucide-react'
 import React from 'react'
+import { useParams } from 'react-router-dom'
 
 const CourseDetail = () => {
+    const params=useParams();
+    const courseId=params.courseId;
+    
+   
+    const {data,isLoading,isError}=useGetCourseByIdQuery(courseId);
+    const course=data?.course;
+    if(isLoading) return <p className='text-white'>Loadingcourse...</p>
+    if(isError || !course) return <p className='text-red-500'>Failed to load course.</p>
+    
     const purchasedCourse = false;
     return (
         <div className='mt-20 space-y-5'>
             {/* Header Section */}
             <div className='bg-[#2D2F31] text-white'>
                 <div className='max-w-7xl mx-auto py-8 px-4 md:px-8 flex flex-col gap-2'>
-                    <h1 className='font-bold text-2xl md:text-3xl'>Course Title</h1>
-                    <p className='text-base md:text-lg'>Course Sub-title</p>
-                    <p>Created By{" "} <span className='text-[#C0C4FC] underline italic'>Patel MemStack</span></p>
+                    <h1 className='font-bold text-2xl md:text-3xl'>{course.courseTitle}</h1>
+                    <p className='text-base md:text-lg'>{course.subTitle}</p>
+                    <p>Created By{" "} <span className='text-[#C0C4FC] underline italic'>{course.creator.name}</span></p>
                     <div className='flex items-center gap-2 text-sm'>
                         <BadgeInfo size={16} />
                         <p>Last updated 11-11-2024</p>
@@ -31,10 +42,7 @@ const CourseDetail = () => {
                         <div>
                             <h1 className='font-bold text-xl md:text-2xl mb-4'>Description</h1>
                             <p className='text-lg text-gray-600 leading-relaxed'>
-                                This comprehensive course is designed for developers who want to learn how to build robust,
-                                production-ready web applications using Next.js. You will master server-side rendering, static site
-                                generation, API routes, dynamic routing, and much more. By the end of this course, you will be
-                                able to create both flexible and fast web applications with ease.
+                                {course.description}
                             </p>
                         </div>
 
@@ -73,7 +81,7 @@ const CourseDetail = () => {
                                 purchasedCourse ? (
                                     <Button className={'w-full bg-blue-600'}>Continue Course</Button>
                                 ) : (
-                                    <BuyCourseButton />
+                                    <BuyCourseButton amount={course.coursePrice} courseId={course._id} />
                                 )
                             }
 
