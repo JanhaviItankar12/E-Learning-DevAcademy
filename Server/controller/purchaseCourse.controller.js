@@ -109,3 +109,48 @@ export const verifyOrder=async (req,res) => {
     
 }
 
+export const getCourseDetailWithPurchaseStatus=async (req,res) => {
+    try {
+      const {courseId}=req.params;
+      const userId=req.id;
+
+      const course=await Course.findById(courseId).populate({path:"creator"}).populate({path:"lectures"});
+      const purchased=await CoursePurchase.findOne(userId,courseId);
+      if(!course){
+        return res.status(404).json({message:"Course not found"});
+      }
+      return res.status(200).json({
+        course,
+        purchased:purchased?true:false
+      })
+    } catch (error) {
+      console.log(error);
+        return res.status(500).json({
+            success: false,
+            message: "Failed to get CourseDetail with Purchase Status"
+        }); 
+    }
+}
+
+export const getAllPurchasedCourses=async (req,res) => {
+     try {
+         const purchasedCourses=await CoursePurchase.find({status:"completed"}).populate("courseId");
+         if(!purchasedCourses){
+          return res.status(404).json({
+            message:"Purchased Courses not found"
+          })
+         }
+
+         return res.status(200).json({
+           purchasedCourses
+         });
+
+     } catch (error) {
+      console.log(error);
+        return res.status(500).json({
+            success: false,
+            message: "Failed to get All purchase Courses."
+        }); 
+     }
+}
+
