@@ -7,13 +7,14 @@ const BuyCourseButton = ({courseId,amount}) => {
    const [createOrder,{}] =useCreateOrderMutation();
    const [verifyOrder,{}]=useVerifyOrderMutation();
 
+   
+
    const handlePayment=async()=>{
     try {
        const order=await createOrder({courseId,amount});
        const orderData=order.data;
        
-       
-const options={
+      const options={
         key:"rzp_test_yFnMdlPgXudtkV",
         amount:orderData.amount,
         currency:orderData.currency,
@@ -23,12 +24,9 @@ const options={
         display_amount:orderData.amount,
          display_currency: "INR",
         handler:async (response) => {
-           const verifyRes=await verifyOrder({courseId,response});
+           const verifyRes=await verifyOrder({courseId,amount,response});
            
-           const result=verifyRes;
-           console.log(result);
-
-           if(result.success){
+           if(verifyRes?.data.success){
             toast.success("Payment Done.");
            }
            else{
@@ -52,7 +50,7 @@ const options={
     }
     }
   return (
-   <Button className={'w-full bg-blue-500'} onClick={handlePayment}>Purchase Course</Button>
+   <Button className={'w-full bg-blue-500 cursor-pointer'} onClick={handlePayment}>Purchase Course</Button>
   )
 }
 

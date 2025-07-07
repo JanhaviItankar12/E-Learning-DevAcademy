@@ -115,10 +115,10 @@ export const courseApi=createApi({
 
       //verify order
       verifyOrder:builder.mutation({
-        query:({courseId,response})=>({
+        query:({courseId,response,amount})=>({
            url:`/${courseId}/purchase/verify`,
           method:"POST",
-          body:{response}
+          body:{response,amount}
         })
       })
     })

@@ -110,7 +110,7 @@ export function Login() {
                             </div>
                         </CardContent>
                         <CardFooter>
-                            <Button disabled={registeredLoading} onClick={()=>handleRegistration("signup")}>
+                            <Button disabled={registeredLoading} className={'cursor-pointer'} onClick={()=>handleRegistration("signup")}>
                                  {
                                  registeredLoading?(
                                     <>
@@ -141,7 +141,7 @@ export function Login() {
                             </div>
                         </CardContent>
                         <CardFooter>
-                            <Button disabled={loginIsLoading} onClick={()=>handleRegistration("login")} >
+                            <Button disabled={loginIsLoading} className={'cursor-pointer'} onClick={()=>handleRegistration("login")} >
                                 {
                                  loginIsLoading?(
                                     <>

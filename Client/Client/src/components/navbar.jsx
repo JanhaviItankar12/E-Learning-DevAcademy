@@ -110,8 +110,8 @@ const Navbar = () => {
                             </DropdownMenu>)
                             : (
                                 <div className='flex items-center gap-2'>
-                                    <Button onClick={() => navigate("/login", { state: { tab: "signup" } })}>Signup</Button>
-                                    <Button variant="outline" onClick={() => navigate("/login")} on>Login</Button>
+                                    <Button onClick={() => navigate("/login", { state: { tab: "signup" } })} className={'cursor-pointer'}>Signup</Button>
+                                    <Button variant="outline" onClick={() => navigate("/login")}  className={'cursor-pointer'}>Login</Button>
                                 </div>
                             )
                     }

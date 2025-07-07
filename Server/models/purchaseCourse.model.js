@@ -4,7 +4,7 @@ const coursePurchaseSchema=new mongoose.Schema({
     courseId:{
         type:mongoose.Schema.Types.ObjectId,
         ref:'Course',
-        reduired:true
+        required:true
     },
     userId:{
         type:mongoose.Schema.Types.ObjectId,
