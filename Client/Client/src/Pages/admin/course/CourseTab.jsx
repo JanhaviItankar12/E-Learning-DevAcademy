@@ -72,7 +72,8 @@ const CourseTab = () => {
     formData.append("courseLevel", input.courseLevel);
     formData.append("coursePrice", input.coursePrice);
     formData.append("subTitle", input.subTitle);
-    formData.append("description", input.description);
+    formData.append("description", input.description || " ");
+    console.log(input.description);
     formData.append("courseThumbnail", input.courseThumbnail);
     await editCourse({ formData, courseId });
   }
@@ -93,18 +94,13 @@ const CourseTab = () => {
       const course = courseByIdData?.course;
       
 
-      //function to strip HTML tags
-      const stripHtml = (html) => {
-        const div = document.createElement("div");
-        div.innerHTML = html;
-        return div.textContent || div.innerText || "";
-      }
+     
 
       
       setInput({
         courseTitle: course.courseTitle,
         subTitle: course.subTitle,
-        description:stripHtml(course.description),
+        description:course.description,
         category: course.category,
         courseLevel: course.courseLevel,
         coursePrice: course.coursePrice,

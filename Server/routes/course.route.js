@@ -4,7 +4,7 @@ import isAuthenticated from "../middleware/isAuthenticated.js";
 import { createCourse, editCourse, getAllCreatorCourses, getCourseById, getPublishedCourses, removeCourse, togglePublishCourse } from "../controller/course.controller.js";
 import { createLecture, editLecture, getCourseLecture, getLectureById, removeLecture } from "../controller/lecture.controller.js";
 import upload from "../utils/multer.js";
-import { createOrder, verifyOrder } from "../controller/purchaseCourse.controller.js";
+import { createOrder, getAllPurchasedCourses, getCourseDetailWithPurchaseStatus, verifyOrder } from "../controller/purchaseCourse.controller.js";
 
 const router=express.Router();
 
@@ -29,6 +29,7 @@ router.route("/:courseId").patch(isAuthenticated,togglePublishCourse);
 //purchase course
 router.route("/:courseId/purchase").post(isAuthenticated,createOrder);
 router.route("/:courseId/purchase/verify").post(isAuthenticated,verifyOrder);
-
+router.route("/:courseId/detail-with-status").get(isAuthenticated,getCourseDetailWithPurchaseStatus);
+router.route("/:courseId/allPurchasedCourse").get(isAuthenticated,getAllPurchasedCourses);
 
 export default router;

@@ -1,31 +1,46 @@
-import React from 'react';
-import { Editor } from '@tinymce/tinymce-react';
+import React, { useEffect, useRef } from 'react';
+import JoditEditor from 'jodit-react';
 
 const RichTextEditor = ({ input, setInput }) => {
-  const handleChange = (content) => {
-    setInput({ ...input, description: content });
-  };
+  const editor = useRef(null);
+  const contentRef = useRef(input.description || '');
+
+  // Update content on typing using polling (since onChange is unreliable in React 19)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (editor.current) {
+        const html = editor.current.value;
+        if (html !== contentRef.current) {
+          contentRef.current = html;
+          setInput((prev) => ({ ...prev, description: html }));
+        }
+      }
+    }, 300); // Poll every 300ms
+
+    return () => clearInterval(interval);
+  }, [setInput]);
 
   return (
-    <Editor
-      apiKey="xgk5g0l6prc8eyzza4vf4o5n22n62e7yvmwhouy5ued0s4ms"
-      value={input.description || ""} // Controlled value
-      onEditorChange={handleChange}
-      init={{
-        height: 300,
-        menubar: false,
-        plugins: [
-          'lists', 'link', 'autolink', 'preview', 'anchor',
-          'searchreplace', 'code', 'wordcount', 'fontsize'
-        ],
-        toolbar:
-          'undo redo | formatselect fontsizeselect | bold italic underline | ' +
-          'alignleft aligncenter alignright | bullist numlist | link | code preview',
-        fontsize_formats: '8pt 10pt 12pt 14pt 16pt 18pt 24pt 36pt',
-        branding: false,
-        placeholder: "Enter course description...",
-      }}
-    />
+    <div className="border rounded">
+      <JoditEditor
+        ref={editor}
+        value={input.description || ''}
+        config={{
+          readonly: false,
+          placeholder: 'Enter course description...',
+          height: 400,
+          toolbarSticky: false,
+          uploader: { insertImageAsBase64URI: true },
+          buttons: [
+            'source', '|', 'bold', 'italic', 'underline', 'strikethrough', '|',
+            'ul', 'ol', '|', 'outdent', 'indent', '|',
+            'font', 'fontsize', 'brush', 'paragraph', '|',
+            'image', 'video', 'link', '|',
+            'align', 'undo', 'redo', 'hr', 'eraser', 'fullsize'
+          ],
+        }}
+      />
+    </div>
   );
 };
 
