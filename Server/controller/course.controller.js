@@ -1,4 +1,4 @@
-import { trusted } from "mongoose";
+
 import { Course } from "../models/course.model.js";
 import { deleteMedia, uploadMedia } from "../utils/cloudinary.js";
 import { removeLecture } from "./lecture.controller.js";
@@ -94,6 +94,25 @@ export const editCourse = async (req, res) => {
         })
     }
 };
+
+//get enrolled course of user
+export const getEnrolledCourseOfUser=async(req,res)=>{
+    try {
+       const userId = req.id;
+       
+       const courses=await Course.find({enrolledStudents:userId}).populate({path:"creator",select:"name photoUrl"});
+        console.log(courses);
+        return res.status(200).json({
+            courses,
+            message: "Fetched enrolled courses successfully"
+        }); 
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: "Failed to fetch enrolled courses"
+        });
+    }
+}
 
 export const getCourseById = async (req, res) => {
     try {
@@ -200,3 +219,58 @@ export const getPublishedCourses=async (_,res) => {
         })  
     }
 }
+
+export const searchCourse=async(req,res)=>{
+    try {
+        let {query="",categories=[],sortByPrice=""}=req.query;
+
+        console.log("query",query);
+        console.log("categories",categories);
+        console.log("sortByPrice",sortByPrice);
+        
+        // fix:convert categories to array if it's string
+        if(typeof categories==="string" && categories.length>0){
+            categories=categories.split(",");
+        }
+        // create a search query
+        const searchCriteria={
+            isPublished:true,
+            $or:[
+                {courseTitle:{$regex:query,$options:"i"}},
+                {subTitle:{$regex:query,$options:"i"}},
+                {categories:{$regex:query,$options:"i"}}
+                
+            ]
+        };
+
+        // if categories are selected
+        if(categories.length>0){
+            searchCriteria.category={$in:categories};
+        }
+
+        // if sort by price is selected
+        const sortOptions={};
+        if(sortByPrice==="low"){
+            sortOptions.coursePrice=1; // ascending order
+        }
+
+        if(sortByPrice==="high"){
+            sortOptions.coursePrice=-1; // descending order
+        }
+
+        let courses=await Course.find(searchCriteria).populate({path:"creator",select:"name photoUrl"}).sort(sortOptions);
+
+        return res.status(200).json({
+            courses:courses || [],
+            success:true,
+        });
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: "Failed to search courses"
+        })
+    }
+}
+
+

@@ -25,8 +25,8 @@ import { useLocation, useNavigate } from "react-router-dom"
 
 
 export function Login() {
-    const [loginInput, setLoginInput] = useState({ email: "", password: "" });
-    const [signupInput, setSignupInput] = useState({ name: "", email: "", password: "" });
+    const [loginInput, setLoginInput] = useState({ email: "", password: "",role:"student" });
+    const [signupInput, setSignupInput] = useState({ name: "", email: "", password: "" ,role:"student"});
      
     const [registerUser,{data:registeredData,error:registeredError,isLoading:registeredLoading,isSuccess:registeredIsSuccess}]=useRegisterUserMutation();
     const [loginUser,{data:loginData,error:loginError,isLoading:loginIsLoading,isSuccess:loginIsSuccess}]=useLoginUserMutation();
@@ -108,6 +108,21 @@ export function Login() {
                                 <Label htmlFor="tabs-demo-new"> Password</Label>
                                 <Input id="tabs-demo-new" onChange={(e)=>changeInputHandler(e,"signup")}  name="password" value={signupInput.password} type="password" placeholder="Ex.#Bxyz" required="true" />
                             </div>
+
+                            <div className="grid gap-3">
+                                <Label htmlFor="tabs-demo-role">Role</Label>
+                                <select
+                                    id="tabs-demo-role"
+                                    name="role"
+                                    onChange={(e) => changeInputHandler(e, "signup")}
+                                    value={signupInput.role}
+                                    className="w-full p-2 border border-gray-300 rounded"
+                                >
+                                    <option value="student">Student</option>
+                                    <option value="instructor">Instructor</option>
+                                    
+                                </select>
+                            </div>
                         </CardContent>
                         <CardFooter>
                             <Button disabled={registeredLoading} className={'cursor-pointer'} onClick={()=>handleRegistration("signup")}>
@@ -138,6 +153,21 @@ export function Login() {
                             <div className="grid gap-3">
                                 <Label htmlFor="tabs-demo-signedPass"> Password</Label>
                                 <Input id="tabs-demo-signedPass" onChange={(e)=>changeInputHandler(e,"login")}  name="password" value={loginInput.password}  type="password" placeholder="Ex.#Bxyz" required="true" />
+                            </div>
+
+                            <div className="grid gap-3">
+                                <Label htmlFor="tabs-demo-role">Role</Label>
+                                <select
+                                    id="tabs-demo-role"
+                                    name="role"
+                                    onChange={(e) => changeInputHandler(e, "login")}
+                                    value={loginInput.role}
+                                    className="w-full p-2 border border-gray-300 rounded"
+                                >
+                                    <option value="student">Student</option>
+                                    <option value="instructor">Instructor</option>
+                                </select>    
+                                
                             </div>
                         </CardContent>
                         <CardFooter>

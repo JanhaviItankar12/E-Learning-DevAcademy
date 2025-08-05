@@ -1,7 +1,7 @@
 import express from "express";
 
 import isAuthenticated from "../middleware/isAuthenticated.js";
-import { createCourse, editCourse, getAllCreatorCourses, getCourseById, getPublishedCourses, removeCourse, togglePublishCourse } from "../controller/course.controller.js";
+import { createCourse, editCourse, getAllCreatorCourses, getCourseById, getEnrolledCourseOfUser, getPublishedCourses, removeCourse, searchCourse, togglePublishCourse } from "../controller/course.controller.js";
 import { createLecture, editLecture, getCourseLecture, getLectureById, removeLecture } from "../controller/lecture.controller.js";
 import upload from "../utils/multer.js";
 import { createOrder, getAllPurchasedCourses, getCourseDetailWithPurchaseStatus, verifyOrder } from "../controller/purchaseCourse.controller.js";
@@ -9,11 +9,21 @@ import { createOrder, getAllPurchasedCourses, getCourseDetailWithPurchaseStatus,
 const router=express.Router();
 
 router.route("/").post(isAuthenticated,createCourse);
-router.route("/published-courses").get(isAuthenticated,getPublishedCourses);
+
+// public route
+router.route("/search").get(isAuthenticated,searchCourse)
+router.route("/published-courses").get(getPublishedCourses);
 router.route("/").get(isAuthenticated,getAllCreatorCourses);
+
+// private route
+// route for  getting user enrolled courses
+router.route("/getEnrolledCourse").get(isAuthenticated,getEnrolledCourseOfUser);
+
 router.route("/:courseId").put(isAuthenticated,upload.single("courseThumbnail"),editCourse);
 router.route("/:courseId").get(isAuthenticated,getCourseById);
 router.route("/:courseId").delete(isAuthenticated,removeCourse);
+
+
 
 //lectures
 router.route("/:courseId/lecture").post(isAuthenticated,createLecture);

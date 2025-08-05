@@ -7,9 +7,11 @@ import { deleteMedia, uploadMedia } from "../utils/cloudinary.js";
 //for signup
 export const register=async(req,res)=>{
     try {
-        const {name,email,password}=req.body;
+       
+        const {name,email,password,role}=req.body;
+       
         
-        if(!name || !email || !password){
+        if(!name || !email || !password || !role){
             return res.status(400).json(
                 {
                     success:false,
@@ -28,7 +30,8 @@ export const register=async(req,res)=>{
         await User.create({
             name,
             email,
-            password:hashedPassword
+            password:hashedPassword,
+            role
         })
         return res.status(201).json({
             success:true,
@@ -46,8 +49,8 @@ export const register=async(req,res)=>{
 //for login
 export const login=async(req,res)=>{
     try {
-        const {email,password}=req.body;
-        if(!email || !password){
+        const {email,password,role}=req.body;
+        if(!email || !password || !role){
             return res.status(400).json(
                 {
                     success:false,

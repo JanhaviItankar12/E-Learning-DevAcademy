@@ -8,54 +8,63 @@ import React, { useEffect, useState } from 'react'
 import Course from './Course'
 import { useLoadUserQuery, useUpdateUserMutation } from '@/features/api/authApi'
 import { toast } from 'sonner'
+import { useGetEnrolledCourseOfUserQuery } from '@/features/api/courseApi'
+
 
 const Profile = () => {
-   const [name, setName] = useState("");
-  const [profilePhoto, setProfilePhoto] = useState("");
+    const [name, setName] = useState("");
+    const [profilePhoto, setProfilePhoto] = useState("");
 
-  const { data, isLoading,refetch } = useLoadUserQuery();
-  const [updateUser, { data: updateUserdata, isLoading: updateUserisLoading, isError, isSuccess }] = useUpdateUserMutation();
+    const { data, isLoading, refetch } = useLoadUserQuery();
+    const [updateUser, { data: updateUserdata, isLoading: updateUserisLoading, isError, isSuccess }] = useUpdateUserMutation();
+    const { data: courseEnrolledData } = useGetEnrolledCourseOfUserQuery();
 
-  useEffect(() => {
-    if (data?.user?.name) {
-      setName(data.user.name);
-    }
-  }, [data]);
+    
 
-  useEffect(()=>{
-     refetch();
-  },[])
+    useEffect(() => {
+        if (data?.user?.name) {
+            setName(data.user.name);
+        }
+    }, [data]);
 
-  useEffect(() => {
-    if (isSuccess) {
+    useEffect(() => {
         refetch();
-      toast.success(updateUserdata?.message || "Profile Updated Successfully");
+    }, [])
+
+    useEffect(() => {
+        if (isSuccess) {
+            refetch();
+            toast.success(updateUserdata?.message || "Profile Updated Successfully");
+        }
+        if (isError) {
+            toast.error("Failed to Update UserProfile");
+        }
+    }, [isSuccess, isError, updateUserdata]);
+
+    const onChangeHandler = (e) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setProfilePhoto(file);
+        }
+    };
+
+    const updateUserHandler = async () => {
+        const formData = new FormData();
+        formData.append("name", name);
+        formData.append("profilePhoto", profilePhoto);
+        await updateUser(formData);
+    };
+
+
+    if (isLoading || !data) {
+        return <h1>Profile Loading....</h1>;
     }
-    if (isError) {
-      toast.error("Failed to Update UserProfile");
-    }
-  }, [isSuccess, isError, updateUserdata]);
 
-  const onChangeHandler = (e) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setProfilePhoto(file);
-    }
-  };
 
-  const updateUserHandler = async () => {
-    const formData = new FormData();
-    formData.append("name", name);
-    formData.append("profilePhoto", profilePhoto);
-    await updateUser(formData);
-  };
+    const { user } = data;
+    console.log
 
-  
-  if (isLoading || !data) {
-    return <h1>Profile Loading....</h1>;
-  }
 
-  const { user } = data;
 
     return (
         <div className='my-24 max-w-4xl mx-auto px-4'>
@@ -63,7 +72,7 @@ const Profile = () => {
             <div className='flex flex-col md:flex-row items-center md:items-start gap-8 my-5'>
                 <div className='flex flex-col items-center '>
                     <Avatar className="h-24 w-24 md:h-32 md:w-32 mb-4">
-                        <AvatarImage src={user.photoUrl || "https://github.com/shadcn.png"} />
+                        <AvatarImage src={user?.photoUrl || "https://github.com/shadcn.png"} />
                         <AvatarFallback>CN</AvatarFallback>
                     </Avatar>
                 </div>
@@ -127,11 +136,15 @@ const Profile = () => {
                 <h1 className='font-medium text-lg'>Courses you're enrolled in</h1>
                 <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 my-5'>
                     {
-                        user.enrolledCourses.length === 0 ? <h1>You haven't enrolled yet.</h1> : (
-                            user.enrolledCourses.map((course) =>
-                                <Course course={course} key={course._id} />)
+                        courseEnrolledData?.courses?.length > 0 ? (
+                            courseEnrolledData.courses.map((course) => (
+                                <Course key={course._id} course={course} />
+                            ))
+                        ) : (
+                            <h1>You haven't enrolled yet.</h1>
                         )
                     }
+
                 </div>
             </div>
         </div>

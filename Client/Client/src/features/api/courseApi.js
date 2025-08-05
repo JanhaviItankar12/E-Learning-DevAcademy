@@ -34,6 +34,15 @@ export const courseApi = createApi({
       }),
       invalidatesTags: ['Refetch_Creator_Course']
     }),
+
+    // get enrolled course by user
+    getEnrolledCourseOfUser:builder.query({
+       query:()=>({
+        url:"/getEnrolledCourse",
+        method:"GET"
+       })
+    }),
+
     getCourseById: builder.query({
       query: (courseId) => ({
         url: `/${courseId}`,
@@ -137,6 +146,33 @@ export const courseApi = createApi({
         url: `/${courseId}/allPurchasedCourse`,
         method: "Get"
       })
+    }),
+
+    // get search courses
+    getsearchCourseQuery: builder.query({
+      query:({searchQuery,categories,sortByPrice})=>{
+        // build query String
+        let queryString=`/search?query=${encodeURIComponent( searchQuery)}`
+        
+        // append categories if provided
+        if(categories && categories.length>0){
+            const categoriesString=categories.map(category=>encodeURIComponent(category)).join(",");    
+            queryString+=`&categories=${categoriesString}`;
+          }
+
+          // append sortByPrice if provided
+          if(sortByPrice){
+            queryString+=`&sortByPrice=${encodeURIComponent(sortByPrice)}`;
+          }
+
+          return{
+            url:queryString,
+            method:"GET"
+          }
+        
+      }
+
+      
     })
 })
 });
@@ -145,6 +181,7 @@ export const {
   useCreateCourseMutation,
   useGetCreatorCoursesQuery,
   useEditCourseMutation,
+  useGetEnrolledCourseOfUserQuery,
   useGetCourseByIdQuery,
   useCreateLectureMutation,
   useGetCourseLectureQuery,
@@ -157,6 +194,7 @@ export const {
   useCreateOrderMutation,
   useVerifyOrderMutation,
   useGetAllPurchasedCoursesQuery,
-  useGetCourseDetailWithPurchaseStatusQuery
+  useGetCourseDetailWithPurchaseStatusQuery,
+  useGetsearchCourseQueryQuery
 } = courseApi
 

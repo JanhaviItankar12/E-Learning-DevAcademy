@@ -7,6 +7,8 @@ import { useGetPublishedCoursesQuery } from '@/features/api/courseApi';
 const Courses = () => {
     const {data,isLoading,isError}=useGetPublishedCoursesQuery();
     if(isError) return <h1>Some Error Occured while fetching courses</h1>
+
+    
    
     return (
         <div className='bg-gray-50'>
@@ -20,7 +22,7 @@ const Courses = () => {
                        )) 
                     )
                      :  (
-                       data?.courses && data?.courses.map((course,index)=><Course key={index} course={course}/>)
+                       data?.courses && data?.courses.map((course)=><Course key={course._id} course={course}/>)
                      )
                 }
                 </div>

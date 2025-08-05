@@ -55,9 +55,8 @@ const Navbar = () => {
                 <div className='flex items-center gap-2'>
                     <School size={"30"} />
                     <Link to={'/'}>
-                     <h1 className='hidden md:block font-extrabold text-2xl'>DevAcademy</h1>
+                        <h1 className='hidden md:block font-extrabold text-2xl'>DevAcademy</h1>
                     </Link>
-                    
                 </div>
 
                 {/* User icons and dark mode icon */}
@@ -73,45 +72,71 @@ const Navbar = () => {
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent className="w-56" align="start">
                                     <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
                                     <DropdownMenuGroup>
+                                        {/* Student Role Menu Items */}
+                                        {user.role === "student" && (
+                                            <>
+                                                <DropdownMenuItem>
+                                                    <Link to="my-learning">My Learning</Link>
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem>
+                                                    <Link to="profile">Edit Profile</Link>
+                                                </DropdownMenuItem>
+                                            </>
+                                        )}
+
+                                        {/* Instructor Role Menu Items */}
+                                        {user.role === "instructor" && (
+                                            <>
+                                                <DropdownMenuItem>
+                                                    <Link to="my-courses">My Courses</Link>
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem>
+                                                    <Link to="create-course">Create Course</Link>
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem>
+                                                    <Link to="earnings">Earnings / Students</Link>
+                                                </DropdownMenuItem>
+                                            </>
+                                        )}
+
+                                        {/* Admin Role Menu Items */}
+                                        {user.role === "admin" && (
+                                            <>
+                                                <DropdownMenuItem>
+                                                    <Link to="admin-dashboard">Admin Dashboard</Link>
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem>
+                                                    <Link to="manage-users">Manage Users</Link>
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem>
+                                                    <Link to="manage-courses">Manage Courses</Link>
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem>
+                                                    <Link to="reports">Reports</Link>
+                                                </DropdownMenuItem>
+                                            </>
+                                        )}
+                                        
+                                        
+                                        {/* back button for home page */}
                                         <DropdownMenuItem>
-                                            <Link to="my-learning">My Learning</Link>
+                                            <Link to="/">Back to Home</Link>
+                                        </DropdownMenuItem> 
 
 
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem>
-                                            <Link to={"profile"}> Edit Profile</Link>
-
-
-                                        </DropdownMenuItem>
+                                        <DropdownMenuSeparator />
                                         <DropdownMenuItem onClick={logoutHandler}>
                                             Log out
-
-
                                         </DropdownMenuItem>
-
-
                                     </DropdownMenuGroup>
-
-
-
-                                    
-                                    {
-                                        user.role === "instructor" && (
-                                             
-                                            <DropdownMenuItem className="bg-purple-600 flex items-center justify-center ">
-
-                                             Dashboard
-                                            </DropdownMenuItem>
-                                        )
-                                    }
-
                                 </DropdownMenuContent>
                             </DropdownMenu>)
                             : (
                                 <div className='flex items-center gap-2'>
                                     <Button onClick={() => navigate("/login", { state: { tab: "signup" } })} className={'cursor-pointer'}>Signup</Button>
-                                    <Button variant="outline" onClick={() => navigate("/login")}  className={'cursor-pointer'}>Login</Button>
+                                    <Button variant="outline" onClick={() => navigate("/login")} className={'cursor-pointer'}>Login</Button>
                                 </div>
                             )
                     }
@@ -119,47 +144,46 @@ const Navbar = () => {
                 </div>
             </div>
             {/* Mobile Device */}
-            <div className='flex md:hidden items-center justify-between px-4 h-full'>
+            {/* <div className='flex md:hidden items-center justify-between px-4 h-full'>
                 <h1 className='font-extrabold text-2xl'>DevAcademy</h1>
                 <MobileNavbar />
-            </div>
-
+            </div> */}
         </div>
     )
 }
 
 export default Navbar;
 
-const MobileNavbar = () => {
-    const role = "instructor";
-    return (
-        <Sheet>
-            <SheetTrigger asChild>
-                <Button variant="outline" size="icon" className="rounded-full bg-gray-200 hover:bg-gray-400">
-                    <Menu />
-                </Button>
-            </SheetTrigger>
-            <SheetContent className="flex flex-col">
-                <SheetHeader className="flex flex-row items-center justify-between mt-8">
-                    <SheetTitle> DevAcademy</SheetTitle>
-                    <DarkMode />
-                </SheetHeader>
-                <Separator className='mr-2' />
-                <nav className='flex flex-col space-y-4 ml-4 text-lg'>
-                    <span>My Learning</span>
-                    <span>Edit Profile</span>
-                    <span>Log out</span>
-                </nav>
-                {
-                    role === "instructor" && (
-                        <SheetFooter>
-                            <Button type="submit">Dashboard</Button>
+// const MobileNavbar = () => {
+//     const role = "instructor";
+//     return (
+//         <Sheet>
+//             <SheetTrigger asChild>
+//                 <Button variant="outline" size="icon" className="rounded-full bg-gray-200 hover:bg-gray-400">
+//                     <Menu />
+//                 </Button>
+//             </SheetTrigger>
+//             <SheetContent className="flex flex-col">
+//                 <SheetHeader className="flex flex-row items-center justify-between mt-8">
+//                     <SheetTitle> DevAcademy</SheetTitle>
+//                     <DarkMode />
+//                 </SheetHeader>
+//                 <Separator className='mr-2' />
+//                 <nav className='flex flex-col space-y-4 ml-4 text-lg'>
+//                     <span>My Learning</span>
+//                     <span>Edit Profile</span>
+//                     <span>Log out</span>
+//                 </nav>
+//                 {
+//                     role === "instructor" && (
+//                         <SheetFooter>
+//                             <Button type="submit">Dashboard</Button>
 
-                        </SheetFooter>
-                    )
-                }
+//                         </SheetFooter>
+//                     )
+//                 }
 
-            </SheetContent>
-        </Sheet>
-    )
-}
+//             </SheetContent>
+//         </Sheet>
+//     )
+// }

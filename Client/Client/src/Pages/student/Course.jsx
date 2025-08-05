@@ -5,41 +5,62 @@ import { Card, CardContent } from '@/components/ui/card'
 import React from 'react'
 import { Link } from 'react-router-dom'
 
+
 const Course = ({ course }) => {
+    
     const courseId=course._id;
+    
     return (
         <Link to={`/course-detail/${courseId}`}>
-            <Card className="overflow-hidden rounded-lg dark:bg-gray-800 bg-white shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300 p-0" >
-                <div className="aspect-w-16 aspect-h-4 overflow-hidden">
+            <Card className="overflow-hidden rounded-lg dark:bg-gray-800 bg-white shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300 p-0 h-full flex flex-col">
+                {/* Fixed height image container */}
+                <div className="relative w-full h-48 overflow-hidden bg-gray-100 dark:bg-gray-700">
                     <img
-                        src={course.courseThumbnail || 'https://github.com/shadcn.png'}
-                        alt="course"
-                        className="w-full h-full object-cover align-top"
+                        src={course?.courseThumbnail || 'https://github.com/shadcn.png'}
+                        alt={course?.courseTitle || 'Course thumbnail'}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                            e.target.src = 'https://github.com/shadcn.png';
+                        }}
                     />
                 </div>
-                <CardContent className="px-5 py-4 space-y-3">
-                    <h1 className="hover:underline font-bold text-lg truncate">{course.courseTitle}</h1>
+                
+                {/* Content section */}
+                <CardContent className="px-5 py-4 space-y-3 flex-grow flex flex-col">
+                    <h1 className="hover:underline font-bold text-lg truncate leading-tight">
+                        {course?.courseTitle}
+                    </h1>
+                    
                     <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                            <Avatar className="h-8 w-8">
-                                <AvatarImage src={course.creator.photoUrl || 'https://github.com/shadcn.png'} />
-                                <AvatarFallback>CN</AvatarFallback>
+                        <div className="flex items-center gap-3 min-w-0 flex-1 mr-2">
+                            <Avatar className="h-8 w-8 flex-shrink-0">
+                                <AvatarImage 
+                                    src={course?.creator?.photoUrl || 'https://github.com/shadcn.png'} 
+                                    alt={course?.creator?.name || 'Creator-Name'}
+                                />
+                                <AvatarFallback>
+                                    {course?.creator?.name?.charAt(0)?.toUpperCase() || 'U'}
+                                </AvatarFallback>
                             </Avatar>
-                            <h1 className="font-medium text-sm">{course.creator.name}</h1>
+                            <h1 className="font-medium text-sm truncate">
+                                {course?.creator?.name}
+                            </h1>
                         </div>
-                        <Badge className="bg-blue-600 text-white px-2 py-1 text-sm rounded-full">
-                            {course.courseLevel}
+                        <Badge className="bg-blue-600 text-white px-2 py-1 text-xs rounded-full flex-shrink-0">
+                            {course?.courseLevel}
                         </Badge>
                     </div>
-                    <div>
-                        <span className="text-lg font-bold">₹{course.coursePrice}</span>
+                    
+                    {/* Price section - pushed to bottom */}
+                    <div className="mt-auto pt-2">
+                        <span className="text-lg font-bold text-green-600 dark:text-green-400">
+                            ₹{course?.coursePrice}
+                        </span>
                     </div>
                 </CardContent>
             </Card>
         </Link>
-
-
-    )
-}
+    );
+};
 
 export default Course;
