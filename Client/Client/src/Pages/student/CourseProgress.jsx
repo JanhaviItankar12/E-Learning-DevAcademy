@@ -13,7 +13,7 @@ const CourseProgress = () => {
     const { data, isLoading, isError, refetch } = useGetCourseProgressQuery(courseId);
 
     const [updateLectureProgress] = useUpdateLectureProgressMutation();
-    const [completeCourse, { data: markAsCompletedData, isSuccess: completedSuccess }] = useCompleteCourseMutation();
+    const [completeCourse, { data: markAsCompletedData, isSuccess: completedSuccess, error: completedError }] = useCompleteCourseMutation();
     const [incompleteCourse, { data: markAsInCompletedData, isSuccess: inCompletedSuccess }] = useIncompleteCourseMutation();
 
     const [currentLecture, setCurrentLecture] = useState(null);
@@ -31,11 +31,16 @@ const CourseProgress = () => {
             toast.success(markAsCompletedData?.message || "Course marked as completed");
             refetch();
         }
+        if (completedError) {
+            toast.error(completedError?.data?.message || // RTK Query error format
+                completedError?.error ||         // fallback
+                "Complete all lectures before completion mark.")
+        }
         if (inCompletedSuccess) {
             toast.success(markAsInCompletedData?.message || "Course marked as incomplete");
             refetch();
         }
-    }, [completedSuccess, inCompletedSuccess, markAsCompletedData, markAsInCompletedData, refetch]);
+    }, [completedSuccess, completedError, inCompletedSuccess, markAsCompletedData, markAsInCompletedData, refetch]);
 
     // Loading and error states
     if (isLoading) return <div className="flex justify-center items-center h-64"><p>Loading...</p></div>;
@@ -64,10 +69,10 @@ const CourseProgress = () => {
     // Handle selecting a specific lecture
     const handleSelectLecture = (lecture) => {
         setCurrentLecture(lecture);
-        handleLectureProgress(lecture._id);
+
     };
 
-    
+
 
     // Handle course completion
     const handleCompleteCourse = async () => {
@@ -94,8 +99,8 @@ const CourseProgress = () => {
             {/* Course header */}
             <div className='flex justify-between items-center mb-4'>
                 <h1 className='text-2xl font-bold'>{courseTitle}</h1>
-                <Button 
-                    variant={completed ? "outline" : "default"} 
+                <Button
+                    variant={completed ? "outline" : "default"}
                     onClick={completed ? handleInCompleteCourse : handleCompleteCourse}
                 >
                     {completed ? (
@@ -119,7 +124,7 @@ const CourseProgress = () => {
                                 src={currentLecture.videoUrl}
                                 controls
                                 className="w-full h-full object-contain rounded-lg"
-                                onPlay={() => handleLectureProgress(currentLecture._id)}
+                                onEnded={() => handleLectureProgress(currentLecture._id)}
                                 onError={(e) => {
                                     console.error('Video loading error:', e);
                                     toast.error('Failed to load video');
@@ -140,14 +145,13 @@ const CourseProgress = () => {
                     <h2 className='font-semibold text-xl mb-4'>Course Lectures</h2>
                     <div className='flex-1 overflow-y-auto max-h-96'>
                         {courseDetails?.lectures?.map((lecture) => (
-                            <Card 
-                                key={lecture._id} 
-                                onClick={() => handleSelectLecture(lecture)} 
-                                className={`mb-3 hover:cursor-pointer transition-all duration-200 hover:shadow-md ${
-                                    lecture._id === currentLecture?._id 
-                                        ? 'bg-gray-100 border-blue-300 dark:bg-gray-700' 
+                            <Card
+                                key={lecture._id}
+                                onClick={() => handleSelectLecture(lecture)}
+                                className={`mb-3 hover:cursor-pointer transition-all duration-200 hover:shadow-md ${lecture._id === currentLecture?._id
+                                        ? 'bg-gray-100 border-blue-300 dark:bg-gray-700'
                                         : 'hover:bg-gray-50 dark:hover:bg-gray-800'
-                                }`}
+                                    }`}
                             >
                                 <CardContent className='flex items-center justify-between p-4'>
                                     <div className='flex items-center flex-1'>

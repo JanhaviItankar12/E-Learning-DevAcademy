@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom'
 
 const Course = ({ course }) => {
     
-    const courseId=course._id;
+    const courseId=course?._id;
     
     return (
         <Link to={`/course-detail/${courseId}`}>

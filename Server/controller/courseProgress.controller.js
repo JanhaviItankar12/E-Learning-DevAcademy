@@ -107,8 +107,16 @@ export const markAsCompleted=async (req, res) => {
             return res.status(404).json({ message: "Course progress not found" });
         }
 
-        // Update the completed status
-        courseProgress.lectureProgress.map((lectureProgress)=>lectureProgress.viewed=true);
+        // check if all lectures are viewed
+        const course=await Course.findById(courseId);
+        const totalLectures = course.lectures.length;
+        const viewedLectures = courseProgress.lectureProgress.filter((lecture) => lecture.viewed).length;
+
+
+        if(viewedLectures<totalLectures){
+             return res.status(400).json({ message: "You must complete all lectures before marking the course as completed." });
+        }
+       
         courseProgress.completed = true;
         await courseProgress.save();
         return res.status(200).json({ message: "Course marked as completed successfully" });

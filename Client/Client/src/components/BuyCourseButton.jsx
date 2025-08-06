@@ -2,14 +2,26 @@ import React from 'react'
 import { Button } from './ui/button'
 import { useCreateOrderMutation, useVerifyOrderMutation } from '@/features/api/courseApi'
 import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+
 
 const BuyCourseButton = ({courseId,amount}) => {
    const [createOrder,{}] =useCreateOrderMutation();
    const [verifyOrder,{}]=useVerifyOrderMutation();
 
+   const navigate=useNavigate();
    
+   const token=useSelector((state)=>state.auth.token);
 
    const handlePayment=async()=>{
+    
+     if (!token) {
+       alert("Please login to purchase the course.");
+       navigate("/login");
+       return;
+     }
+      
     try {
        const order=await createOrder({courseId,amount});
        const orderData=order.data;
@@ -46,6 +58,14 @@ const BuyCourseButton = ({courseId,amount}) => {
       rzp.open(); 
     } catch (error) {
       console.error("Payment error:", error);
+
+      // check if unauthorized
+      if(error?.error?.status===401){
+        alert("Session Expired.Please login again.");
+        localStorage.removeItem("token");
+        navigate("/login");
+        return;
+      }
       alert("Something went wrong during payment.");
     }
     }

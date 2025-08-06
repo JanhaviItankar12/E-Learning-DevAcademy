@@ -21,6 +21,8 @@ import { useEffect, useState } from "react"
 import { useLoginUserMutation, useRegisterUserMutation } from "@/features/api/authApi"
 import { toast } from "sonner"
 import { useLocation, useNavigate } from "react-router-dom"
+import { useDispatch } from "react-redux"
+import { userLoggedIn } from "@/features/authSlice"
 
 
 
@@ -35,6 +37,7 @@ export function Login() {
 
     const location=useLocation();
     const [tab,setTab]=useState("login");
+    const from=location.state?.from?.pathname || "/";
 
     useEffect(()=>{
         if(location.state?.tab==="signup"){
@@ -58,6 +61,18 @@ export function Login() {
         
         try {
             const result=await action(inputData).unwrap();
+
+            if(result){
+                if(type==="signup"){
+                    setTab("login");
+                }
+                else{
+                    useDispatch(userLoggedIn({ user: result.user }));
+                    localStorage.setItem("token",result.token);
+                    localStorage.setItem("user",JSON.stringify(result.user));
+                    navigate(from,{replace:true});
+                }
+            }
             
         } catch (error) {
             console.log("Error from  backend:",error);

@@ -17,7 +17,8 @@ const SearchPage = () => {
         setSelectedCategories(categories);
         setSortByPrice(price);
     }
-
+   
+    
     const {data,isLoading}=useGetsearchCourseQueryQuery({
         searchQuery:query,
         categories:selectedCategories,

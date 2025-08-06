@@ -39,7 +39,11 @@ router.route("/:courseId").patch(isAuthenticated,togglePublishCourse);
 //purchase course
 router.route("/:courseId/purchase").post(isAuthenticated,createOrder);
 router.route("/:courseId/purchase/verify").post(isAuthenticated,verifyOrder);
-router.route("/:courseId/detail-with-status").get(isAuthenticated,getCourseDetailWithPurchaseStatus);
+
+// it must visible to all users
+router.route("/:courseId/detail-with-status").get(getCourseDetailWithPurchaseStatus);
+
+
 router.route("/:courseId/allPurchasedCourse").get(isAuthenticated,getAllPurchasedCourses);
 
 export default router;

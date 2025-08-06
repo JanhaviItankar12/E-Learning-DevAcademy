@@ -19,6 +19,11 @@ import CourseDetail from './Pages/student/CourseDetail'
 import CourseProgress from './Pages/student/CourseProgress'
 import SearchPage from './Pages/student/SearchPage'
 
+// protection route
+import ProtectedRoute from './components/ProtectedRoute'
+
+
+
 
 const appRouter=createBrowserRouter([
   {
@@ -40,7 +45,11 @@ const appRouter=createBrowserRouter([
       },
       {
         path:"course-progress/:courseId",
-        element:<CourseProgress/>
+        element:(
+        <ProtectedRoute>
+          <CourseProgress allowedRoles={['student']}/>
+        </ProtectedRoute>
+        )
       },
      {
       path:"login",
@@ -48,11 +57,19 @@ const appRouter=createBrowserRouter([
      },
      {
       path:"my-learning",
-      element:<MyLearning/>
+      element:(
+      <ProtectedRoute>
+         <MyLearning allowedRoles={['student']}/>
+      </ProtectedRoute>
+      )
      },
      {
       path:"profile",
-      element:<Profile/>
+      element:(
+      <ProtectedRoute>
+          <Profile allowedRoles={['student','instructor']}/>
+      </ProtectedRoute>
+      )
      },
      {
       path:"course/search",
@@ -62,7 +79,11 @@ const appRouter=createBrowserRouter([
      //admin routes start from here
      {
       path:"admin",
-      element:<Sidebar/>,
+      element:(
+        <ProtectedRoute>
+            <Sidebar allowedRoles={['admin']}/>
+        </ProtectedRoute>
+        ),
       children:[
         {
           path:"dashboard",
@@ -94,8 +115,6 @@ const appRouter=createBrowserRouter([
   }
 ])
 function App() {
-  
-
   return (
     <main>
       <RouterProvider router={appRouter}/>

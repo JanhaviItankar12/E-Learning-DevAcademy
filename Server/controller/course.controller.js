@@ -224,9 +224,7 @@ export const searchCourse=async(req,res)=>{
     try {
         let {query="",categories=[],sortByPrice=""}=req.query;
 
-        console.log("query",query);
-        console.log("categories",categories);
-        console.log("sortByPrice",sortByPrice);
+       
         
         // fix:convert categories to array if it's string
         if(typeof categories==="string" && categories.length>0){
@@ -238,13 +236,16 @@ export const searchCourse=async(req,res)=>{
             $or:[
                 {courseTitle:{$regex:query,$options:"i"}},
                 {subTitle:{$regex:query,$options:"i"}},
-                {categories:{$regex:query,$options:"i"}}
+                {category:{$regex:query,$options:"i"}}
                 
             ]
         };
 
+        
+
         // if categories are selected
         if(categories.length>0){
+            categories = categories.map(cat => cat.toLowerCase());
             searchCriteria.category={$in:categories};
         }
 

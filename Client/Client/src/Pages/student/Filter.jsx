@@ -7,26 +7,27 @@ import React, { useEffect, useState } from 'react'
 
 const Filter = ({ handleFilterChange }) => {
 
-    const category = [
-        { id: "NextJS", label: "NextJS" },
-        { id: "ReactJs", label: "ReactJS" },
-        { id: "Javascript", label: "Javascript" },
-        { id: "HTML", label: "HTML" },
-        { id: "CSS", label: "CSS" },
-        { id: "NodeJS", label: "NodeJS" },
-        { id: "ExpressJS", label: "ExpressJS" },
-        { id: "MongoDB", label: "MongoDB" },
-        { id: "Python", label: "Python" },
-        { id: "Django", label: "Django" },
-        { id: "Flask", label: "Flask" },
-        { id: "Java", label: "Java" },
-        { id: "SpringBoot", label: "Spring Boot" },
-        { id: "PHP", label: "PHP" },
-    ];
+   const category = [
+    { id: "nextjs", label: "NextJS" },
+    { id: "reactjs", label: "ReactJS" },
+    { id: "javascript", label: "Javascript" },
+    { id: "html", label: "HTML" },
+    { id: "css", label: "CSS" },
+    { id: "nodejs", label: "NodeJS" },
+    { id: "expressjs", label: "ExpressJS" },
+    { id: "mongodb", label: "MongoDB" },
+    { id: "python", label: "Python" },
+    { id: "django", label: "Django" },
+    { id: "flask", label: "Flask" },
+    { id: "java", label: "Java" },
+    { id: "springboot", label: "Spring Boot" },
+    { id: "php", label: "PHP" },
+];
 
     const [selectedCategories, setSelectedCategories] = useState([]);
     const [sortByPrice, setSortByPrice] = useState("");
-
+    
+    
     useEffect(() => {
         handleFilterChange(selectedCategories, sortByPrice);
     }, [selectedCategories, sortByPrice]);
@@ -35,7 +36,7 @@ const Filter = ({ handleFilterChange }) => {
     const handleCategoryChange = (categoryId) => {
         // Handle category change logic here
         setSelectedCategories((prevCategories) => {
-             prevCategories.includes(categoryId) ? prevCategories.filter((id) => id !== categoryId) : [...prevCategories, categoryId];
+            return prevCategories.includes(categoryId) ? prevCategories.filter((id) => id !== categoryId) : [...prevCategories, categoryId];
 
         })
     }
