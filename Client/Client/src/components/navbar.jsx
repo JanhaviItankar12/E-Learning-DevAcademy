@@ -34,7 +34,7 @@ import { useSelector } from 'react-redux';
 const Navbar = () => {
     const navigate = useNavigate();
 
-    const { user } = useSelector(store => store.auth);
+    const { user  } = useSelector(store => store.auth);
 
     const [loggedOutUser, { data, isSuccess }] = useLoggedOutUserMutation();
 
@@ -66,7 +66,7 @@ const Navbar = () => {
                             (<DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <Avatar>
-                                        <AvatarImage src={user?.photoUrl || "https://github.com/shadcn.png"} />
+                                        <AvatarImage src={user?.user?.photoUrl || "https://github.com/shadcn.png"} />
                                         <AvatarFallback>CN</AvatarFallback>
                                     </Avatar>
                                 </DropdownMenuTrigger>
@@ -75,7 +75,7 @@ const Navbar = () => {
                                     <DropdownMenuSeparator />
                                     <DropdownMenuGroup>
                                         {/* Student Role Menu Items */}
-                                        {user.role === "student" && (
+                                        {user?.user?.role === "student" && (
                                             <>
                                                 <DropdownMenuItem>
                                                     <Link to="my-learning">My Learning</Link>
@@ -87,7 +87,7 @@ const Navbar = () => {
                                         )}
 
                                         {/* Instructor Role Menu Items */}
-                                        {user.role === "instructor" && (
+                                        {user?.user?.role === "instructor" && (
                                             <>
                                                 <DropdownMenuItem>
                                                     <Link to="my-courses">My Courses</Link>
@@ -102,7 +102,7 @@ const Navbar = () => {
                                         )}
 
                                         {/* Admin Role Menu Items */}
-                                        {user.role === "admin" && (
+                                        {user?.user?.role === "admin" && (
                                             <>
                                                 <DropdownMenuItem>
                                                     <Link to="admin-dashboard">Admin Dashboard</Link>

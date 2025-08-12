@@ -27,23 +27,24 @@ import { userLoggedIn } from "@/features/authSlice"
 
 
 export function Login() {
-    const [loginInput, setLoginInput] = useState({ email: "", password: "",role:"student" });
-    const [signupInput, setSignupInput] = useState({ name: "", email: "", password: "" ,role:"student"});
-     
-    const [registerUser,{data:registeredData,error:registeredError,isLoading:registeredLoading,isSuccess:registeredIsSuccess}]=useRegisterUserMutation();
-    const [loginUser,{data:loginData,error:loginError,isLoading:loginIsLoading,isSuccess:loginIsSuccess}]=useLoginUserMutation();
-    
-    const navigate=useNavigate();
+    const [loginInput, setLoginInput] = useState({ email: "", password: "", role: "student" });
+    const [signupInput, setSignupInput] = useState({ name: "", email: "", password: "", role: "student" });
 
-    const location=useLocation();
-    const [tab,setTab]=useState("login");
-    const from=location.state?.from?.pathname || "/";
+    const [registerUser, { data: registeredData, error: registeredError, isLoading: registeredLoading, isSuccess: registeredIsSuccess }] = useRegisterUserMutation();
+    const [loginUser, { data: loginData, error: loginError, isLoading: loginIsLoading, isSuccess: loginIsSuccess }] = useLoginUserMutation();
 
-    useEffect(()=>{
-        if(location.state?.tab==="signup"){
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+
+    const location = useLocation();
+    const [tab, setTab] = useState("login");
+    const from = location.state?.from?.pathname || "/";
+
+    useEffect(() => {
+        if (location.state?.tab === "signup") {
             setTab("signup");
         }
-    },[location.state]);
+    }, [location.state]);
 
     const changeInputHandler = (e, type) => {
         const { name, value } = e.target;
@@ -55,46 +56,52 @@ export function Login() {
         }
     }
 
-    const handleRegistration=async(type)=>{
-        const inputData=type==="signup"?signupInput:loginInput;
-        const action=type==="signup"?registerUser:loginUser;
-        
-        try {
-            const result=await action(inputData).unwrap();
+    const handleRegistration = async (type) => {
+        const inputData = type === "signup" ? signupInput : loginInput;
+        const action = type === "signup" ? registerUser : loginUser;
 
-            if(result){
-                if(type==="signup"){
+        try {
+            const result = await action(inputData).unwrap();
+           
+           
+
+            if (result) {
+                if (type === "signup") {
                     setTab("login");
                 }
-                else{
-                    useDispatch(userLoggedIn({ user: result.user }));
-                    localStorage.setItem("token",result.token);
-                    localStorage.setItem("user",JSON.stringify(result.user));
-                    navigate(from,{replace:true});
+                else {
+                    dispatch(userLoggedIn(result));
+                    localStorage.setItem("token", result.token);
+                    localStorage.setItem("user", JSON.stringify(result.user));
+                    navigate(from, { replace: true });
                 }
             }
-            
+
         } catch (error) {
-            console.log("Error from  backend:",error);
+            console.log("Error from  backend:", error);
         }
     }
 
-    useEffect(()=>{ 
-        if(registeredIsSuccess && registeredData){
+    useEffect(() => {
+        if (registeredIsSuccess && registeredData) {
             toast.success(registeredData.message || "Signup Successfully");
         }
-        if(registeredError){
+        if (registeredError) {
             toast.error(registeredError?.data?.message || "Signup Failed");
         }
-        if(loginIsSuccess && loginData){
+        if (loginIsSuccess && loginData) {
             toast.success(loginData.message || "Login Successfully");
-            navigate("/");
+          
         }
-        if(loginError){
+        if (loginError) {
             toast.error(loginError?.data?.message || "Login Failed");
         }
 
-    },[loginIsLoading,loginData,registeredLoading,registeredData,loginError,registeredError])
+    }, [loginIsLoading, loginData, registeredLoading, registeredData, loginError, registeredError])
+
+   
+
+
     return (
         <div className="flex w-full items-center justify-center mt-25">
             <Tabs value={tab} onValueChange={setTab} className="w-[400px]">
@@ -113,15 +120,15 @@ export function Login() {
                         <CardContent className="grid gap-6">
                             <div className="grid gap-3">
                                 <Label htmlFor="tabs-demo-name">Name</Label>
-                                <Input type="text" onChange={(e)=>changeInputHandler(e,"signup")} name="name" value={signupInput.name} id="tabs-demo-name" placeholder="Enter your name..." defaultValue="" required="true" />
+                                <Input type="text" onChange={(e) => changeInputHandler(e, "signup")} name="name" value={signupInput.name} id="tabs-demo-name" placeholder="Enter your name..." defaultValue="" required="true" />
                             </div>
                             <div className="grid gap-3">
                                 <Label htmlFor="tabs-demo-email">Email</Label>
-                                <Input id="tabs-demo-email" onChange={(e)=>changeInputHandler(e,"signup")} name="email" value={signupInput.email} type="email" placeholder="Enter your email..." defaultValue="" required="true" />
+                                <Input id="tabs-demo-email" onChange={(e) => changeInputHandler(e, "signup")} name="email" value={signupInput.email} type="email" placeholder="Enter your email..." defaultValue="" required="true" />
                             </div>
                             <div className="grid gap-3">
                                 <Label htmlFor="tabs-demo-new"> Password</Label>
-                                <Input id="tabs-demo-new" onChange={(e)=>changeInputHandler(e,"signup")}  name="password" value={signupInput.password} type="password" placeholder="Ex.#Bxyz" required="true" />
+                                <Input id="tabs-demo-new" onChange={(e) => changeInputHandler(e, "signup")} name="password" value={signupInput.password} type="password" placeholder="Ex.#Bxyz" required="true" />
                             </div>
 
                             <div className="grid gap-3">
@@ -135,20 +142,20 @@ export function Login() {
                                 >
                                     <option value="student">Student</option>
                                     <option value="instructor">Instructor</option>
-                                    
+
                                 </select>
                             </div>
                         </CardContent>
                         <CardFooter>
-                            <Button disabled={registeredLoading} className={'cursor-pointer'} onClick={()=>handleRegistration("signup")}>
-                                 {
-                                 registeredLoading?(
-                                    <>
-                                    <Loader2 className="mr-2 h-4 w-4 animate-spin"/>Please wait...
-                                    </>
-                                 ) :"Sign Up"
+                            <Button disabled={registeredLoading} className={'cursor-pointer'} onClick={() => handleRegistration("signup")}>
+                                {
+                                    registeredLoading ? (
+                                        <>
+                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />Please wait...
+                                        </>
+                                    ) : "Sign Up"
                                 }
-                                </Button>
+                            </Button>
                         </CardFooter>
                     </Card>
                 </TabsContent>
@@ -163,11 +170,11 @@ export function Login() {
                         <CardContent className="grid gap-6">
                             <div className="grid gap-3">
                                 <Label htmlFor="tabs-demo-signedemail">Email</Label>
-                                <Input id="tabs-demo-signed" onChange={(e)=>changeInputHandler(e,"login")} name="email" value={loginInput.email}  type="email" placeholder="Enter your email..." defaultValue="" required="true" />
+                                <Input id="tabs-demo-signed" onChange={(e) => changeInputHandler(e, "login")} name="email" value={loginInput.email} type="email" placeholder="Enter your email..." defaultValue="" required="true" />
                             </div>
                             <div className="grid gap-3">
                                 <Label htmlFor="tabs-demo-signedPass"> Password</Label>
-                                <Input id="tabs-demo-signedPass" onChange={(e)=>changeInputHandler(e,"login")}  name="password" value={loginInput.password}  type="password" placeholder="Ex.#Bxyz" required="true" />
+                                <Input id="tabs-demo-signedPass" onChange={(e) => changeInputHandler(e, "login")} name="password" value={loginInput.password} type="password" placeholder="Ex.#Bxyz" required="true" />
                             </div>
 
                             <div className="grid gap-3">
@@ -181,20 +188,20 @@ export function Login() {
                                 >
                                     <option value="student">Student</option>
                                     <option value="instructor">Instructor</option>
-                                </select>    
-                                
+                                </select>
+
                             </div>
                         </CardContent>
                         <CardFooter>
-                            <Button disabled={loginIsLoading} className={'cursor-pointer'} onClick={()=>handleRegistration("login")} >
+                            <Button disabled={loginIsLoading} className={'cursor-pointer'} onClick={() => handleRegistration("login")} >
                                 {
-                                 loginIsLoading?(
-                                    <>
-                                    <Loader2 className="mr-2 h-4 w-4 animate-spin"/>Please wait...
-                                    </>
-                                 ) :"Login"
+                                    loginIsLoading ? (
+                                        <>
+                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />Please wait...
+                                        </>
+                                    ) : "Login"
                                 }
-                                </Button>
+                            </Button>
                         </CardFooter>
                     </Card>
                 </TabsContent>

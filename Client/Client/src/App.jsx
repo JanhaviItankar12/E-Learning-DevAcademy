@@ -46,8 +46,8 @@ const appRouter=createBrowserRouter([
       {
         path:"course-progress/:courseId",
         element:(
-        <ProtectedRoute>
-          <CourseProgress allowedRoles={['student']}/>
+        <ProtectedRoute allowedRoles={['student']}>
+          <CourseProgress />
         </ProtectedRoute>
         )
       },
@@ -58,16 +58,16 @@ const appRouter=createBrowserRouter([
      {
       path:"my-learning",
       element:(
-      <ProtectedRoute>
-         <MyLearning allowedRoles={['student']}/>
+      <ProtectedRoute  allowedRoles={['student']}>
+         <MyLearning/>
       </ProtectedRoute>
       )
      },
      {
       path:"profile",
       element:(
-      <ProtectedRoute>
-          <Profile allowedRoles={['student','instructor']}/>
+      <ProtectedRoute allowedRoles={['student','instructor']}>
+          <Profile/>
       </ProtectedRoute>
       )
      },
@@ -80,8 +80,8 @@ const appRouter=createBrowserRouter([
      {
       path:"admin",
       element:(
-        <ProtectedRoute>
-            <Sidebar allowedRoles={['admin']}/>
+        <ProtectedRoute allowedRoles={['admin']}>
+            <Sidebar/>
         </ProtectedRoute>
         ),
       children:[
