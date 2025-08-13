@@ -63,14 +63,16 @@ export function Login() {
         try {
             const result = await action(inputData).unwrap();
            
-           
-
             if (result) {
                 if (type === "signup") {
                     setTab("login");
                 }
                 else {
-                    dispatch(userLoggedIn(result));
+                    dispatch(userLoggedIn({
+                        user:result.user,
+                        token:result.token
+                    }));
+                    
                     localStorage.setItem("token", result.token);
                     localStorage.setItem("user", JSON.stringify(result.user));
                     navigate(from, { replace: true });

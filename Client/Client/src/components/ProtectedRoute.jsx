@@ -8,14 +8,11 @@ const ProtectedRoute = ({children, allowedRoles}) => {
    
     const location=useLocation();
 
-   console.log(user?.user?.role);
-
-  
   if(!isAuthenticated){
     return <Navigate to="/login" state={{from:location}} replace/>
   }
 
-  if(allowedRoles && !allowedRoles.includes(user?.user?.role)){
+  if(allowedRoles && !allowedRoles.includes(user?.role)){
     toast.error("You don't have permission to access this page");
     return <Navigate to={'/'} replace/>
   }

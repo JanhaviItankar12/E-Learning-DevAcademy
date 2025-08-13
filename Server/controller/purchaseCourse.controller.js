@@ -4,6 +4,8 @@ import { CoursePurchase } from '../models/purchaseCourse.model.js';
 import { Lecture } from '../models/lecture.model.js';
 import {User} from '../models/user.model.js';
 import { Course } from '../models/course.model.js';
+import jwt from "jsonwebtoken";
+
 
 const razorpay=new Razorpay({
     key_id:process.env.test_key_id,
@@ -112,17 +114,30 @@ export const verifyOrder=async (req,res) => {
 export const getCourseDetailWithPurchaseStatus=async (req,res) => {
     try {
       const {courseId}=req.params;
-      const userId=req.id;
+      let userId=null;
+
+     //read token from headers
+     const token=req.cookies.token;
+     if(token){
+       const decoded=jwt.verify(token,process.env.secret_key);
+       userId=decoded.userId;
+     }
       
       const course=await Course.findById(courseId).populate({path:"creator"}).populate({path:"lectures"});
-      const purchased=await CoursePurchase.findOne({userId,courseId});
-      
       if(!course){
         return res.status(404).json({message:"Course not found"});
       }
+
+      
+      let purchased=false;
+      if(userId){
+        const purchasedDoc=await CoursePurchase.findOne({userId,courseId});
+        purchased=!!purchasedDoc;
+      }
+      
       return res.status(200).json({
         course,
-        purchased:purchased?true:false
+        purchased
       });
     } catch (error) {
       console.log(error);
