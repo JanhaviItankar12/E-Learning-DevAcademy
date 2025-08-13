@@ -128,7 +128,7 @@ const CourseTab = () => {
         const result=await removeCourse(courseId);
         if(result.data){
           toast.success(result.data.message);
-          navigate("/admin/course");
+          navigate("/instructor/course");
         }
     } catch (error) {
       toast.error("Failed to remove course");
@@ -243,7 +243,7 @@ const CourseTab = () => {
             }
           </div>
           <div className='flex items-center gap-2 mt-3'>
-            <Button variant={'outline'} onClick={() => navigate('/admin/course')}>Cancel</Button>
+            <Button variant={'outline'} onClick={() => navigate('/instructor/course')}>Cancel</Button>
             <Button disabled={isLoading} onClick={updateCourseHandler}>
               {
                 isLoading ? (

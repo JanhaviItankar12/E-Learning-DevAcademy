@@ -50,7 +50,7 @@ const CreateLecture = () => {
                     </div>
 
                     <div className='flex items-center gap-4 '>
-                        <Button variant={'outline'} onClick={() => navigate(`/admin/course/${courseId}`)} className={'cursor-pointer'}>Back to Course</Button>
+                        <Button variant={'outline'} onClick={() => navigate(`/instructor/course/${courseId}`)} className={'cursor-pointer'}>Back to Course</Button>
                         <Button disabled={isLoading} onClick={createLectureHandler} className={'cursor-pointer'} >
                             {
                                 isLoading ? (

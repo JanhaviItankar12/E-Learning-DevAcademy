@@ -74,6 +74,14 @@ export const login=async(req,res)=>{
                 message:"Incorrect password"
             })
         }
+
+        //check for role
+        if(user.role!==role){
+            return res.status(403).json({
+                success:false,
+                message:"Please select the correct role to login"
+            })
+        }
     generateToken(res,user,`Welcome back ${user.name}`); 
     
     } catch (error) {

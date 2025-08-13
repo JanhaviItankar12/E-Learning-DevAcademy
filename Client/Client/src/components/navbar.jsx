@@ -90,14 +90,11 @@ const Navbar = () => {
                                         {/* Instructor Role Menu Items */}
                                         {user?.role === "instructor" && (
                                             <>
-                                                <DropdownMenuItem>
-                                                    <Link to="my-courses">My Courses</Link>
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem>
-                                                    <Link to="create-course">Create Course</Link>
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem>
-                                                    <Link to="earnings">Earnings / Students</Link>
+                                               <DropdownMenuItem>
+                                                <Link to="instructor">Dashboard</Link>
+                                               </DropdownMenuItem>
+                                                 <DropdownMenuItem>
+                                                    <Link to="profile">Edit Profile</Link>
                                                 </DropdownMenuItem>
                                             </>
                                         )}

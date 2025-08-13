@@ -78,7 +78,7 @@ const LectureTab = () => {
     useEffect(() => {
         if (removeSuccess) {
             toast.success(removeData.message || "Lecture Deleted Successfully");
-            navigate(`/admin/course/${courseId}/lecture`);
+            navigate(`/instructor/course/${courseId}/lecture`);
         }
     }, [removeSuccess])
 

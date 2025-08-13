@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import './App.css'
 import { Login } from './Pages/Login'
@@ -21,6 +21,8 @@ import SearchPage from './Pages/student/SearchPage'
 
 // protection route
 import ProtectedRoute from './components/ProtectedRoute'
+import { useDispatch } from 'react-redux'
+import { userLoggedIn } from './features/authSlice'
 
 
 
@@ -78,9 +80,9 @@ const appRouter=createBrowserRouter([
 
      //admin routes start from here
      {
-      path:"admin",
+      path:"instructor",
       element:(
-        <ProtectedRoute allowedRoles={['admin']}>
+        <ProtectedRoute allowedRoles={['instructor']}>
             <Sidebar/>
         </ProtectedRoute>
         ),
@@ -115,6 +117,21 @@ const appRouter=createBrowserRouter([
   }
 ])
 function App() {
+
+  const dispatch=useDispatch();
+
+  useEffect(()=>{
+    const token=localStorage.getItem("token");
+    const user=localStorage.getItem("user");
+
+    if(token && user){
+      dispatch(userLoggedIn({
+        token,
+        user:JSON.parse(user)
+      }));
+    }
+  },[dispatch]);
+
   return (
     <main>
       <RouterProvider router={appRouter}/>
