@@ -23,8 +23,7 @@ const CourseDetail = () => {
     
     const { course, purchased } = data;
 
-    console.log(data);
-
+  
     const handleContinueCourse = () => {
         if(purchased){
           navigate(`/course-progress/${courseId}`);

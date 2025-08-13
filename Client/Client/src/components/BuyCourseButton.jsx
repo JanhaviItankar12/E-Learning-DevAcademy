@@ -13,6 +13,7 @@ const BuyCourseButton = ({courseId,amount}) => {
    const navigate=useNavigate();
    
    const token=useSelector((state)=>state.auth.token);
+   console.log(token);
 
    const handlePayment=async()=>{
     
