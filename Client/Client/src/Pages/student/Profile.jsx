@@ -14,6 +14,7 @@ import { useGetCreatorCoursesQuery, useGetEnrolledCourseOfUserQuery } from '@/fe
 const Profile = () => {
     const [name, setName] = useState("");
     const [profilePhoto, setProfilePhoto] = useState("");
+    const [photoUrl,setPhotoUrl]=useState("");
 
     const { data, isLoading, refetch } = useLoadUserQuery();
     const [updateUser, { data: updateUserdata, isLoading: updateUserisLoading, isError, isSuccess }] = useUpdateUserMutation();
@@ -25,6 +26,12 @@ const Profile = () => {
             setName(data.user.name);
         }
     }, [data]);
+
+    useEffect(()=>{
+       if(data?.user?.photoUrl){
+        setPhotoUrl(data.user.photoUrl);
+       }
+    },[data]);
 
     useEffect(() => {
         refetch();
@@ -44,6 +51,7 @@ const Profile = () => {
         const file = e.target.files?.[0];
         if (file) {
             setProfilePhoto(file);
+            setPhotoUrl(URL.createObjectURL(file));
         }
     };
 
@@ -51,9 +59,18 @@ const Profile = () => {
         const formData = new FormData();
         formData.append("name", name);
         formData.append("profilePhoto", profilePhoto);
-        await updateUser(formData);
-    };
+       
+       try {
+           const res= await updateUser(formData).unwrap();
+           setPhotoUrl(res.user.photoUrl);
+           setName(res.user.name);
+           toast.success(res.message || "Profile updated successfully");
+       } catch (error) {
+           toast.error("Failed to update profile");
+       } 
 
+
+    }
     if (isLoading || !data) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
@@ -66,6 +83,7 @@ const Profile = () => {
     }
 
     const { user } = data;
+    
 
     return (
         <div className='min-h-screen bg-gradient-to-br mt-10  from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 py-12'>
@@ -83,12 +101,12 @@ const Profile = () => {
                         <div className='flex flex-col items-center'>
                             <div className='relative group'>
                                 <Avatar className="h-32 w-32 mb-4 ring-4 ring-indigo-500 ring-offset-4 ring-offset-white dark:ring-offset-gray-800 transition-transform group-hover:scale-105">
-                                    <AvatarImage src={user?.photoUrl || "https://github.com/shadcn.png"} />
+                                    <AvatarImage src={user?.photoUrl}/>
                                     <AvatarFallback className="text-2xl font-bold bg-gradient-to-r from-indigo-500 to-purple-600 text-white">
                                         {user?.name?.charAt(0)?.toUpperCase() || 'U'}
                                     </AvatarFallback>
                                 </Avatar>
-                                <div className='absolute inset-0 rounded-full bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300'></div>
+                                <div className='absolute inset-0 rounded-full bg-black opacity-0 group-hover:bg-opacity-10 transition-all duration-300'></div>
                             </div>
                             <div className={`px-4 py-2 rounded-full text-sm font-semibold mt-3 ${
                                 user.role === 'instructor' 
@@ -129,14 +147,7 @@ const Profile = () => {
                                         {user.role === 'student' ? 'Enrolled Courses' : 'Created Courses'}
                                     </div>
                                 </div>
-                                <div className='bg-gradient-to-r from-green-500 to-green-600 rounded-xl p-4 text-white'>
-                                    <div className='text-2xl font-bold'>100%</div>
-                                    <div className='text-green-100 text-sm'>Profile Complete</div>
-                                </div>
-                                <div className='bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl p-4 text-white'>
-                                    <div className='text-2xl font-bold'>Active</div>
-                                    <div className='text-purple-100 text-sm'>Account Status</div>
-                                </div>
+                               
                             </div>
 
                             {/* Edit Profile Button */}

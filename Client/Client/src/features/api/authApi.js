@@ -61,6 +61,7 @@ export const authApi = createApi({
                     method: "GET",
 
                 }),
+              
                  async onQueryStarted(_, { queryFulfilled, dispatch }) {
                 try {
                     const result = await queryFulfilled;
@@ -76,7 +77,8 @@ export const authApi = createApi({
                     url: "profile/update",
                     method: "PUT",
                     body: formData
-                })
+                }),
+               
             })
        
     })
