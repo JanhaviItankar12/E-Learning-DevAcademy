@@ -82,9 +82,22 @@ export const updateLectureProgress = async (req, res) => {
         const course=await Course.findById(courseId);
         if(course.lectures.length === lectureProgressLength){
             courseProgress.completed=true;
+            
+            //check if already marked completed to avoid duplicates
+            const alreadyCompleted=course.completions.some(
+                (c)=>c.student.toString()===userId.toString()
+            );
+
+            if(!alreadyCompleted){
+                course.completions.push({
+                    student:userId,
+                    completedAt:new Date()
+                });
+            }
         }
 
         await courseProgress.save();
+        await course.save();
         
         return res.status(200).json({
             message: "Lecture progress updated successfully"
@@ -104,7 +117,7 @@ export const markAsCompleted=async (req, res) => {
 
         const courseProgress = await CourseProgress.findOne({courseId,userId});
         if (!courseProgress) {
-            return res.status(404).json({ message: "Course progress not found" });
+            return res.status(404).json({ message: "You have completed the course" });
         }
 
         // check if all lectures are viewed
@@ -119,6 +132,8 @@ export const markAsCompleted=async (req, res) => {
        
         courseProgress.completed = true;
         await courseProgress.save();
+        course.completions(userId);
+        await course.save();
         return res.status(200).json({ message: "Course marked as completed successfully" });
     } catch (error) {
         console.error("Error marking course as completed:", error);
@@ -149,6 +164,18 @@ export const markAsInCompleted=async (req, res) => {
         
     }
 };
+
+
+//count completed course count
+
+export const  CourseCompletedCount=async(req,res)=>{
+  const {courseId}= req.params;
+  const completedCount=await CourseProgress.countDocuments({
+    courseId:courseId,
+    completed:true
+});
+}
+
 
 
 

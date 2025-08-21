@@ -9,9 +9,11 @@ import Course from './Course'
 import { useLoadUserQuery, useUpdateUserMutation } from '@/features/api/authApi'
 import { toast } from 'sonner'
 import { useGetCreatorCoursesQuery, useGetEnrolledCourseOfUserQuery } from '@/features/api/courseApi'
+import { useNavigate } from 'react-router-dom'
 
 
 const Profile = () => {
+    const navigate=useNavigate();
     const [name, setName] = useState("");
     const [profilePhoto, setProfilePhoto] = useState("");
     const [photoUrl,setPhotoUrl]=useState("");
@@ -20,7 +22,8 @@ const Profile = () => {
     const [updateUser, { data: updateUserdata, isLoading: updateUserisLoading, isError, isSuccess }] = useUpdateUserMutation();
     const { data: courseEnrolledData } = useGetEnrolledCourseOfUserQuery();
     const { data: createdCoursesData } = useGetCreatorCoursesQuery(); // Add this query for instructor's created courses
-
+   
+    console.log(courseEnrolledData);
     useEffect(() => {
         if (data?.user?.name) {
             setName(data.user.name);
@@ -71,27 +74,18 @@ const Profile = () => {
 
 
     }
-    if (isLoading || !data) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-500 mx-auto"></div>
-                    <h1 className="mt-4 text-xl font-semibold text-gray-700 dark:text-gray-300">Loading Profile...</h1>
-                </div>
-            </div>
-        );
-    }
-
+    
+    
     const { user } = data;
     
 
     return (
-        <div className='min-h-screen bg-gradient-to-br mt-10  from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 py-12'>
+        <div className='min-h-screen bg-gradient-to-br mt-15  from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 py-12'>
             <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
                 {/* Header */}
-                <div className='text-center mb-12'>
+                <div className='text-center mb-8'>
                     
-                    <p className='text-lg text-gray-600 dark:text-gray-300'>Manage your account and view your learning journey</p>
+                    <p className='text-lg text-gray-600 dark:text-gray-300'>Manage your account and view your {user.role=="student"? "learning" : "teaching" } journey</p>
                 </div>
 
                 {/* Profile Card */}
@@ -243,7 +237,7 @@ const Profile = () => {
                                     <p className='text-gray-600 dark:text-gray-300 mb-6'>
                                         Start your learning journey by enrolling in courses
                                     </p>
-                                    <Button className='bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700'>
+                                    <Button onClick={()=>navigate(`/course/search?query`)} className='bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700'>
                                         Browse Courses
                                     </Button>
                                 </div>
@@ -268,11 +262,7 @@ const Profile = () => {
                                                         alt={course.courseTitle}
                                                         className='w-full h-48 object-cover'
                                                     />
-                                                    <div className='absolute top-4 right-4'>
-                                                        <span className='bg-purple-500 text-white px-3 py-1 rounded-full text-xs font-semibold'>
-                                                            Instructor
-                                                        </span>
-                                                    </div>
+                                                   
                                                 </div>
                                                 <div className='p-6'>
                                                     <h3 className='font-bold text-lg text-gray-900 dark:text-white mb-2 line-clamp-2'>
@@ -291,11 +281,11 @@ const Profile = () => {
                                                         </div>
                                                     </div>
                                                     <div className='mt-4 flex gap-2'>
-                                                        <Button size='sm' variant='outline' className='flex-1'>
-                                                            <Edit className='h-4 w-4 mr-1' />
+                                                        <Button size='sm' variant='outline' className='flex-1' onClick={()=>navigate(`/instructor/course/${course._id}`)}>
+                                                            <Edit className='h-4 w-4 mr-1'  />
                                                             Edit
                                                         </Button>
-                                                        <Button size='sm' className='flex-1 bg-purple-500 hover:bg-purple-600'>
+                                                        <Button size='sm' className='flex-1 bg-purple-500 hover:bg-purple-600' onClick={()=>navigate(`/instructor/course/${course._id}/preview`)}>
                                                             <Eye className='h-4 w-4 mr-1' />
                                                             View
                                                         </Button>
@@ -314,7 +304,7 @@ const Profile = () => {
                                     <p className='text-gray-600 dark:text-gray-300 mb-6'>
                                         Share your knowledge by creating your first course
                                     </p>
-                                    <Button className='bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700'>
+                                    <Button className='bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700' onClick={()=>navigate("/instructor/course/create")}>
                                         <Plus className='h-4 w-4 mr-2' />
                                         Create Course
                                     </Button>

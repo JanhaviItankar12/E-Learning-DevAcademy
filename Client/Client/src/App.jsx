@@ -23,6 +23,8 @@ import SearchPage from './Pages/student/SearchPage'
 import ProtectedRoute from './components/ProtectedRoute'
 import { useDispatch } from 'react-redux'
 import { userLoggedIn } from './features/authSlice'
+import CoursePreview from './Pages/admin/course/CoursePreview'
+import CourseAnalytics from './Pages/admin/course/CourseAnalytics'
 
 
 
@@ -78,7 +80,7 @@ const appRouter=createBrowserRouter([
       element:<SearchPage/>
      },
 
-     //admin routes start from here
+     //instructor routes start from here
      {
       path:"instructor",
       element:(
@@ -102,6 +104,14 @@ const appRouter=createBrowserRouter([
         {
           path:"course/:courseId",
           element:<EditCourse/>
+        },
+        {
+          path:"course/:courseId/preview",
+          element:<CoursePreview/>
+        },
+        {
+          path:"course/:courseId/preview/analytics",
+          element:<CourseAnalytics/>
         },
         {
           path:"course/:courseId/lecture",

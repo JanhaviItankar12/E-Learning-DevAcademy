@@ -14,7 +14,20 @@ const lectureSchema = new mongoose.Schema({
     isPreviewFree: {
         type: Boolean
 
-    }
+    },
+    views:{
+        type:Number,
+        default:0,
+    },
+    dropOff:{
+        type:Number,
+        default:0,
+    },
+    avgTime:{
+        type:String,
+        default:"0.00"
+    },
+  
 
 
 

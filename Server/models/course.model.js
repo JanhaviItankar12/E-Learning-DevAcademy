@@ -20,21 +20,42 @@ const courseSchema=new mongoose.Schema({
         enum:["Beginner","Medium","Advance"]
     },
     coursePrice:{
-        type:Number
+        type:Number,
+        default:0
     },
     courseThumbnail:{
         type:String
     },
     enrolledStudents:[
         {
-            type:mongoose.Schema.Types.ObjectId,
-            ref:'User'
+            student:{type:mongoose.Schema.Types.ObjectId,
+            ref:'User'},
+            enrolledAt: { type: Date, default: Date.now },
         }
     ],
     lectures:[
         {
            type:mongoose.Schema.Types.ObjectId,
-            ref:'Lecture' 
+            ref:'Lecture' ,
+            
+        }
+    ],
+    reviews:[
+        {
+           student:{type:mongoose.Schema.Types.ObjectId,
+            ref:"User"
+           },
+           rating:Number,
+           comment:String,
+           createdAt:{type:Date,default:Date.now}
+        },
+    ],
+    completions:[
+        {
+            student:{type:mongoose.Schema.Types.ObjectId,
+                ref:'User'
+            },
+            completedAt:{type:Date,default:Date.now},
         }
     ],
     creator:{

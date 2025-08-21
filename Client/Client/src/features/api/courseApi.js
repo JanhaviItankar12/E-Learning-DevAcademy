@@ -173,6 +173,13 @@ export const courseApi = createApi({
       }
 
       
+    }),
+
+    getCourseAnalytics:builder.query({
+      query:(courseId)=>({
+         url:`/${courseId}/analytics`,
+         method:"GET"
+      })
     })
 })
 });
@@ -195,6 +202,7 @@ export const {
   useVerifyOrderMutation,
   useGetAllPurchasedCoursesQuery,
   useGetCourseDetailWithPurchaseStatusQuery,
-  useGetsearchCourseQueryQuery
+  useGetsearchCourseQueryQuery,
+  useGetCourseAnalyticsQuery
 } = courseApi
 

@@ -1,4 +1,5 @@
 
+import mongoose from "mongoose";
 import { Course } from "../models/course.model.js";
 import { deleteMedia, uploadMedia } from "../utils/cloudinary.js";
 import { removeLecture } from "./lecture.controller.js";
@@ -96,16 +97,16 @@ export const editCourse = async (req, res) => {
 };
 
 //get enrolled course of user
-export const getEnrolledCourseOfUser=async(req,res)=>{
+export const getEnrolledCourseOfUser = async (req, res) => {
     try {
-       const userId = req.id;
+        const userId = req.id;
        
-       const courses=await Course.find({enrolledStudents:userId}).populate({path:"creator",select:"name photoUrl"});
-        console.log(courses);
+        const courses = await Course.find({ "enrolledStudents.student": new mongoose.Types.ObjectId(userId)  }).populate({ path: "creator", select: "name photoUrl" });
+
         return res.status(200).json({
             courses,
             message: "Fetched enrolled courses successfully"
-        }); 
+        });
     } catch (error) {
         console.log(error);
         return res.status(500).json({
@@ -117,13 +118,13 @@ export const getEnrolledCourseOfUser=async(req,res)=>{
 export const getCourseById = async (req, res) => {
     try {
         const courseId = req.params.courseId;
-        const course = await Course.findById(courseId).populate({path:"creator",select:"name"});
-       
+        const course = await Course.findById(courseId).populate({ path: "creator lectures", select: "name lectureTitle" });
+
         if (!course) {
             return res.status(404).json({
                 message: "Course not found!"
 
-            })
+            });
         }
         return res.status(200).json({
             course
@@ -142,9 +143,9 @@ export const getCourseById = async (req, res) => {
 //publish and unpublish course logic
 export const togglePublishCourse = async (req, res) => {
     try {
-        const {courseId}=req.params;
-        const {publish}=req.query;  //true,false
-        const course=await Course.findById(courseId);
+        const { courseId } = req.params;
+        const { publish } = req.query;  //true,false
+        const course = await Course.findById(courseId);
         if (!course) {
             return res.status(404).json({
                 message: "Course not found!"
@@ -152,12 +153,12 @@ export const togglePublishCourse = async (req, res) => {
             })
         }
         //publish status based on the query parameter
-        course.isPublished=publish==="true";
+        course.isPublished = publish === "true";
         await course.save();
 
-        const statusMessage=course.isPublished ? "Published" : "Unpublished";
+        const statusMessage = course.isPublished ? "Published" : "Unpublished";
         return res.status(200).json({
-            message:`Course is ${statusMessage}`
+            message: `Course is ${statusMessage}`
         })
 
     } catch (error) {
@@ -170,100 +171,100 @@ export const togglePublishCourse = async (req, res) => {
 }
 
 
-export const removeCourse=async (req,res) => {
-      try {
-        const {courseId}=req.params;
-        const course=await Course.findById(courseId);
-        if(!course){
+export const removeCourse = async (req, res) => {
+    try {
+        const { courseId } = req.params;
+        const course = await Course.findById(courseId);
+        if (!course) {
             return res.status(404).json({
-                message:"Course not found!"
+                message: "Course not found!"
             })
         }
 
         //step 1:delete all referenced lectures
-        await Lecture.deleteMany({_id:{$in:course.lectures}});
-        
+        await Lecture.deleteMany({ _id: { $in: course.lectures } });
+
         //step 2:delete course
         await Course.findByIdAndDelete(courseId);
 
         return res.status(200).json({
-            message:"Course deleted Successfully"
+            message: "Course deleted Successfully"
         })
-        
-      } catch (error) {
+
+    } catch (error) {
         console.log(error);
         return res.status(500).json({
             message: "Failed to remove course"
 
         })
-      } 
-}
-
-export const getPublishedCourses=async (_,res) => {
-    try {
-       const courses=await Course.find({isPublished:true}).populate({path:"creator",select:"name photoUrl"}) ;
-       if(!courses){
-        return res.status(404).json({
-            message:"Courses not Found"
-        })
-       }
-       return res.status(200).json({
-        courses,
-
-       })
-    } catch (error) {
-      console.log(error);
-        return res.status(500).json({
-            message: "Failed to get published courses"
-
-        })  
     }
 }
 
-export const searchCourse=async(req,res)=>{
+export const getPublishedCourses = async (_, res) => {
     try {
-        let {query="",categories=[],sortByPrice=""}=req.query;
+        const courses = await Course.find({ isPublished: true }).populate({ path: "creator", select: "name photoUrl" });
+        if (!courses) {
+            return res.status(404).json({
+                message: "Courses not Found"
+            })
+        }
+        return res.status(200).json({
+            courses,
 
-       
-        
+        })
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: "Failed to get published courses"
+
+        })
+    }
+}
+
+export const searchCourse = async (req, res) => {
+    try {
+        let { query = "", categories = [], sortByPrice = "" } = req.query;
+
+
+
         // fix:convert categories to array if it's string
-        if(typeof categories==="string" && categories.length>0){
-            categories=categories.split(",");
+        if (typeof categories === "string" && categories.length > 0) {
+            categories = categories.split(",");
         }
         // create a search query
-        const searchCriteria={
-            isPublished:true,
-            $or:[
-                {courseTitle:{$regex:query,$options:"i"}},
-                {subTitle:{$regex:query,$options:"i"}},
-                {category:{$regex:query,$options:"i"}}
-                
+        const searchCriteria = {
+            isPublished: true,
+            $or: [
+                { courseTitle: { $regex: query, $options: "i" } },
+                { subTitle: { $regex: query, $options: "i" } },
+                { category: { $regex: query, $options: "i" } }
+
             ]
         };
 
-        
+
 
         // if categories are selected
-        if(categories.length>0){
+        if (categories.length > 0) {
             categories = categories.map(cat => cat.toLowerCase());
-            searchCriteria.category={$in:categories};
+            searchCriteria.category = { $in: categories };
         }
 
         // if sort by price is selected
-        const sortOptions={};
-        if(sortByPrice==="low"){
-            sortOptions.coursePrice=1; // ascending order
+        const sortOptions = {};
+        if (sortByPrice === "low") {
+            sortOptions.coursePrice = 1; // ascending order
         }
 
-        if(sortByPrice==="high"){
-            sortOptions.coursePrice=-1; // descending order
+        if (sortByPrice === "high") {
+            sortOptions.coursePrice = -1; // descending order
         }
 
-        let courses=await Course.find(searchCriteria).populate({path:"creator",select:"name photoUrl"}).sort(sortOptions);
+        let courses = await Course.find(searchCriteria).populate({ path: "creator", select: "name photoUrl" }).sort(sortOptions);
 
         return res.status(200).json({
-            courses:courses || [],
-            success:true,
+            courses: courses || [],
+            success: true,
         });
 
     } catch (error) {
@@ -271,6 +272,110 @@ export const searchCourse=async(req,res)=>{
         return res.status(500).json({
             message: "Failed to search courses"
         })
+    }
+}
+
+// course Analytics
+export const getCourseAnalytics = async (req, res) => {
+    try {
+        const { courseId } = req.params;
+
+        const course = await Course.findById(courseId)
+            .populate("enrolledStudents", "name")
+            .populate("reviews.student", "name")
+            .populate("lectures");  //get full lectures
+
+        if (!course) {
+            return res.status(404).json({ message: "Course not found" });
+        }
+
+        // overview
+        const totalRevenue = course.enrolledStudents.length * course.coursePrice;
+        const totalStudents = course.enrolledStudents.length;
+        const avgRating =
+            course.reviews.length > 0
+                ? (
+                    course.reviews.reduce((sum, r) => sum + r.rating, 0) / course.reviews.length
+                ).toFixed(1)
+                : 0;
+
+        const completionRate =
+            totalStudents > 0
+                ? Math.round((course.completions.length / totalStudents) * 100)
+                : 0;
+
+
+        //lecture engagement
+        const lectureEngagement = course.lectures.map((lec) => ({
+            title: lec.title,
+            views: lec.views,
+            avgTime: lec.avgTime,
+            dropOff: lec.dropOff
+        }));
+
+        //build monthly data dynamically
+        const months = [
+            "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+            "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+        ];
+
+        // count enrollements per month
+        const enrollmentsByMonth = {};
+        course.enrolledStudents.forEach((enroll) => {
+            const month = months[new Date(enroll.enrolledAt).getMonth()];
+            enrollmentsByMonth[month] = (enrollmentsByMonth[month] || 0) + 1;
+        });
+
+
+        // Count completions per month
+        const completionsByMonth = {};
+        course.completions.forEach((comp) => {
+            const month = months[new Date(comp.completedAt).getMonth()];
+            completionsByMonth[month] = (completionsByMonth[month] || 0) + 1;
+        });
+
+        // construct final monthlyData
+        const monthlyData=months.map((m)=>({
+           month:m,
+           enrollments:enrollmentsByMonth[m] || 0,
+           completions:completionsByMonth[m] || 0,
+           revenue:(enrollmentsByMonth[m] || 0)*course.coursePrice,
+        }));
+
+        //recent activity
+        const recentActivity = [
+            ...course.enrolledStudents.slice(-3).map((s) => ({
+                type: "enrollment",
+                student: s.name,
+                time: "recently"
+            })),
+            ...course.completions.slice(-2).map((c) => ({
+                type: "completion",
+                student: c.student?.name || "Student",
+                time: "recently",
+            })),
+            ...course.reviews.slice(-2).map((r) => ({
+                type: "review",
+                student: r.student?.name || "Student",
+                rating: r.rating,
+                time: "recently",
+            })),
+        ];
+
+        res.json({
+            overview: {
+                totalRevenue,
+                totalStudents,
+                averageRating: avgRating,
+                completionRate,
+            },
+            monthlyData,
+            lectureEngagement,
+            recentActivity
+        });
+
+    } catch (error) {
+
     }
 }
 

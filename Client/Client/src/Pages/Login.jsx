@@ -27,8 +27,8 @@ import { userLoggedIn } from "@/features/authSlice"
 
 
 export function Login() {
-    const [loginInput, setLoginInput] = useState({ email: "", password: "", role: "" });
-    const [signupInput, setSignupInput] = useState({ name: "", email: "", password: "", role: "" });
+    const [loginInput, setLoginInput] = useState({ email: "", password: "", role: "student" });
+    const [signupInput, setSignupInput] = useState({ name: "", email: "", password: "", role: "student" });
 
     const [registerUser, { data: registeredData, error: registeredError, isLoading: registeredLoading, isSuccess: registeredIsSuccess }] = useRegisterUserMutation();
     const [loginUser, { data: loginData, error: loginError, isLoading: loginIsLoading, isSuccess: loginIsSuccess }] = useLoginUserMutation();
