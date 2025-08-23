@@ -23,7 +23,7 @@ const Profile = () => {
     const { data: courseEnrolledData } = useGetEnrolledCourseOfUserQuery();
     const { data: createdCoursesData } = useGetCreatorCoursesQuery(); // Add this query for instructor's created courses
    
-    console.log(courseEnrolledData);
+    
     useEffect(() => {
         if (data?.user?.name) {
             setName(data.user.name);

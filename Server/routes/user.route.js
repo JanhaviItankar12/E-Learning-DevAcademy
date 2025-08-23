@@ -1,5 +1,5 @@
 import express from "express";
-import { getUserProfile, logout, register, updateProfile } from "../controller/user.controller.js";
+import { getCurrentUser, getUserProfile, logout, register, updateProfile } from "../controller/user.controller.js";
 import { login } from "../controller/user.controller.js";
 import isAuthenticated from "../middleware/isAuthenticated.js";
 import upload from "../utils/multer.js";
@@ -11,6 +11,9 @@ router.route("/login").post(login);
 router.route("/logout").get(logout);
 router.route("/profile").get(isAuthenticated, getUserProfile);
 router.route("/profile/update").put(isAuthenticated, upload.single("profilePhoto"), updateProfile);
+
+// get logged in user
+router.route("/user").get(isAuthenticated,getCurrentUser);
 
 export default router;
 

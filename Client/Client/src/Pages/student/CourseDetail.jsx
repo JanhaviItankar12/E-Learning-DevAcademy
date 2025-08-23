@@ -22,6 +22,7 @@ const CourseDetail = () => {
     if (!data?.course) return <p className='text-red-500'>Course not found.</p>;
     
     const { course, purchased } = data;
+    
 
   
     const handleContinueCourse = () => {

@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import { User } from "../models/user.model.js";
 
 const isAuthenticated= async(req,res,next)=>{
      try {
@@ -18,7 +19,9 @@ const isAuthenticated= async(req,res,next)=>{
                 success:false
             })
         }
-        
+
+        req.user=await User.findById(decode.userId).select("-password")
+
         req.id=decode.userId;
         next();
 

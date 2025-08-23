@@ -1,7 +1,7 @@
 import express from "express";
 
 import isAuthenticated from "../middleware/isAuthenticated.js";
-import { createCourse, editCourse, getAllCreatorCourses, getCourseAnalytics, getCourseById, getEnrolledCourseOfUser, getPublishedCourses, removeCourse, searchCourse, togglePublishCourse } from "../controller/course.controller.js";
+import { addReviews, createCourse, deleteReview, editCourse, getAllCreatorCourses, getCourseAnalytics, getCourseById, getEnrolledCourseOfUser, getPublishedCourses, removeCourse, searchCourse, togglePublishCourse, updateReview } from "../controller/course.controller.js";
 import { createLecture, editLecture, getCourseLecture, getLectureById, removeLecture } from "../controller/lecture.controller.js";
 import upload from "../utils/multer.js";
 import { createOrder, getAllPurchasedCourses, getCourseDetailWithPurchaseStatus, verifyOrder } from "../controller/purchaseCourse.controller.js";
@@ -49,4 +49,15 @@ router.route("/:courseId/allPurchasedCourse").get(isAuthenticated,getAllPurchase
 
 // course analytics
 router.route("/:courseId/analytics").get(isAuthenticated,getCourseAnalytics);
+
+
+//reviews section
+router.route("/:courseId/review").post(isAuthenticated,addReviews);
+router.route("/:courseId/review/:reviewId").put(isAuthenticated,updateReview);
+router.route("/:courseId/review/:reviewId").delete(isAuthenticated,deleteReview);
+
+
+
+
 export default router;
+

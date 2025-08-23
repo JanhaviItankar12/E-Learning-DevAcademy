@@ -8,7 +8,7 @@ export const getCourseProgress = async (req, res) => {
 
         // step1:fetch the user course progress
         let courseProgress=await CourseProgress.findOne({courseId,userId}).populate("courseId");
-        const courseDetails=await Course.findById(courseId).populate("lectures");
+        const courseDetails=await Course.findById(courseId).populate("lectures").populate("reviews.student","name email photoUrl");
 
         if(!courseDetails){
             return res.status(404).json({ message: "Course not found" });
@@ -30,7 +30,8 @@ export const getCourseProgress = async (req, res) => {
             data:{
                 courseDetails,
                 progress:courseProgress.lectureProgress,
-                completed:courseProgress.completed
+                completed:courseProgress.completed,
+
             }
         });
 
@@ -117,7 +118,7 @@ export const markAsCompleted=async (req, res) => {
 
         const courseProgress = await CourseProgress.findOne({courseId,userId});
         if (!courseProgress) {
-            return res.status(404).json({ message: "You have completed the course" });
+            return res.status(404).json({ message: "You have to complete the course" });
         }
 
         // check if all lectures are viewed

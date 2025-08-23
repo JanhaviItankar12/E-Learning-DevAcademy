@@ -100,8 +100,8 @@ export const editCourse = async (req, res) => {
 export const getEnrolledCourseOfUser = async (req, res) => {
     try {
         const userId = req.id;
-       
-        const courses = await Course.find({ "enrolledStudents.student": new mongoose.Types.ObjectId(userId)  }).populate({ path: "creator", select: "name photoUrl" });
+        console.log(userId)
+        const courses = await Course.find({ enrolledStudents: new mongoose.Types.ObjectId(userId) }).populate({ path: "creator", select: "name photoUrl" });
 
         return res.status(200).json({
             courses,
@@ -114,6 +114,7 @@ export const getEnrolledCourseOfUser = async (req, res) => {
         });
     }
 }
+
 
 export const getCourseById = async (req, res) => {
     try {
@@ -335,11 +336,11 @@ export const getCourseAnalytics = async (req, res) => {
         });
 
         // construct final monthlyData
-        const monthlyData=months.map((m)=>({
-           month:m,
-           enrollments:enrollmentsByMonth[m] || 0,
-           completions:completionsByMonth[m] || 0,
-           revenue:(enrollmentsByMonth[m] || 0)*course.coursePrice,
+        const monthlyData = months.map((m) => ({
+            month: m,
+            enrollments: enrollmentsByMonth[m] || 0,
+            completions: completionsByMonth[m] || 0,
+            revenue: (enrollmentsByMonth[m] || 0) * course.coursePrice,
         }));
 
         //recent activity
@@ -378,5 +379,117 @@ export const getCourseAnalytics = async (req, res) => {
 
     }
 }
+
+
+//reviews section
+
+export const addReviews = async (req, res) => {
+    try {
+        const { courseId } = req.params;
+        const userId = req.id;
+        const { rating, comment } = req.body;
+
+        if (!rating || !comment || !courseId) {
+            return res.status(400).json({
+                message: "All Fields are Reuired"
+            })
+        }
+
+        const course = await Course.findById(courseId);
+        if (!course) {
+            return res.status(404).json({ message: "Course not found" });
+        }
+
+        //check if user already reviwed this course
+        const alreadyReviewed =  course.reviews.find(
+            (r) => r.student.toString() === userId.toString()
+        );
+
+        if (alreadyReviewed) {
+            return res.status(400).json({ message: "You already reviewed this course" });
+        }
+
+        course.reviews.push({
+            student: userId,
+            rating,
+            comment,
+        });
+
+        await course.save();
+        res.status(201).json({
+            message: "Review added Successfully",
+            reviews: course.reviews
+        });
+
+    } catch (error) {
+        console.error("Error adding review:", error);
+        return res.status(500).json({ message: "Server error" });
+    }
+}
+
+
+export const updateReview = async (req, res) => {
+    try {
+        const { rating, comment } = req.body;
+        const { courseId, reviewId } = req.params;
+        const userId = req.id;
+
+        const course = await Course.findById(courseId);
+        if (!course) {
+            return res.status(404).json({ message: "Course not found" });
+        }
+
+        const review = course.reviews.id(reviewId);
+        if (!review) {
+            return res.status(404).json({ message: "Review not found" });
+        }
+
+        if (review.student.toString() !== userId.toString()) {
+            return res.status(403).json({ message: "Not authorized to update this review" });
+        }
+
+        review.rating = rating || review.rating;
+        review.comment = comment || review.comment;
+
+        await course.save();
+        res.json({ message: "Review updated successfully", reviews: course.reviews });
+
+    } catch (error) {
+        console.error("Error updating review:", error);
+        res.status(500).json({ message: "Server error" });
+    }
+}
+
+export const deleteReview = async (req, res) => {
+    try {
+        const { courseId, reviewId } = req.params;
+        const userId = req.id;
+
+        const course = await Course.findById(courseId);
+        if (!course) {
+            return res.status(404).json({ message: "Course not found" });
+        }
+
+        const review = course.reviews.id(reviewId);
+        if (!review) {
+            return res.status(404).json({ message: "Review not found" });
+        }
+
+        if (review.student.toString() !== userId.toString()) {
+            return res.status(403).json({ message: "Not authorized to delete this review" });
+        }
+
+        review.remove();
+        await course.save();
+        res.json({ message: "Review deleted successfully", reviews: course.reviews });
+    } catch (error) {
+
+    }
+}
+
+
+
+
+
 
 

@@ -10,7 +10,7 @@ export const authApi = createApi({
     baseQuery: fetchBaseQuery({
         baseUrl: user_api,
         credentials: 'include',
-       
+
     }),
     endpoints: (builder) => ({
         //for register
@@ -32,7 +32,7 @@ export const authApi = createApi({
                 try {
                     const result = await queryFulfilled;
                     dispatch(userLoggedIn({ user: result.data.user }));
-                   
+
                 } catch (error) {
                     console.log(error);
                 }
@@ -44,25 +44,25 @@ export const authApi = createApi({
                 url: "logout",
                 method: "GET",
             }),
-             async onQueryStarted(_, { queryFulfilled, dispatch }) {
+            async onQueryStarted(_, { queryFulfilled, dispatch }) {
                 try {
-                    
+
                     dispatch(userLoggedOut());
                 } catch (error) {
                     console.log(error);
                 }
             }
-            
-        }),
-            //load user
-            loadUser: builder.query({
-                query: () => ({
-                    url: "profile",
-                    method: "GET",
 
-                }),
-              
-                 async onQueryStarted(_, { queryFulfilled, dispatch }) {
+        }),
+        //load user
+        loadUser: builder.query({
+            query: () => ({
+                url: "profile",
+                method: "GET",
+
+            }),
+
+            async onQueryStarted(_, { queryFulfilled, dispatch }) {
                 try {
                     const result = await queryFulfilled;
                     dispatch(userLoggedIn({ user: result.data.user }));
@@ -70,17 +70,25 @@ export const authApi = createApi({
                     console.log(error);
                 }
             }
+        }),
+        //updateUser
+        updateUser: builder.mutation({
+            query: (formData) => ({
+                url: "profile/update",
+                method: "PUT",
+                body: formData
             }),
-            //updateUser
-            updateUser: builder.mutation({
-                query: (formData) => ({
-                    url: "profile/update",
-                    method: "PUT",
-                    body: formData
-                }),
-               
+
+        }),
+        
+        // get logged in user
+        getCurrentUser: builder.query({
+            query: () => ({
+                url: "/user",
+                method: 'GET'
             })
-       
+        })
+
     })
 })
 
@@ -89,7 +97,8 @@ export const {
     useLoginUserMutation,
     useLoadUserQuery,
     useUpdateUserMutation,
-    useLoggedOutUserMutation
+    useLoggedOutUserMutation,
+    useGetCurrentUserQuery
 
 } = authApi;
 

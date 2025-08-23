@@ -89,6 +89,8 @@ export const courseApi = createApi({
       })
     }),
 
+  
+
     //publish and unpublish course
     togglePublishCourse: builder.mutation({
       query: ({ courseId, query }) => ({
@@ -180,7 +182,36 @@ export const courseApi = createApi({
          url:`/${courseId}/analytics`,
          method:"GET"
       })
-    })
+    }),
+
+    //reviews section
+    addReviews:builder.mutation({
+      query:({courseId,rating,comment})=>({
+        url:`/${courseId}/review`,
+        method:'POST',
+        body:{rating,comment}
+      })
+    }),
+
+    updateReviews:builder.mutation({
+       query:({courseId,reviewId,rating,comment})=>({
+         url:`/${courseId}/review/${reviewId}`,
+         method:'PUT',
+         body:{rating,comment}
+       })
+    }),
+
+    deleteReviews:builder.mutation({
+      query:({courseId,reviewId,rating,comment})=>({
+        url:`/${courseId}/review/${reviewId}`,
+        method:'DELETE',
+        body:{rating,comment}
+      })
+    }),
+
+    
+
+
 })
 });
 
@@ -203,6 +234,10 @@ export const {
   useGetAllPurchasedCoursesQuery,
   useGetCourseDetailWithPurchaseStatusQuery,
   useGetsearchCourseQueryQuery,
-  useGetCourseAnalyticsQuery
+  useGetCourseAnalyticsQuery,
+  useAddReviewsMutation,
+  useUpdateReviewsMutation,
+  useDeleteReviewsMutation,
+  
 } = courseApi
 

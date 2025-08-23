@@ -185,3 +185,19 @@ export const updateProfile = async (req, res) => {
         });
     }
 }
+
+
+//get logged in user
+export const getCurrentUser=async(req,res)=>{
+    try {
+        return res.status(201).json(
+           req.user,
+        )
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: "Failed to fetch current user data"
+        });
+    }
+}
+
